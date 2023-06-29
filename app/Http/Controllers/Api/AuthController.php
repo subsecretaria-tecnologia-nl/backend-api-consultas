@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +17,6 @@ class AuthController extends Controller
     public function createUser(Request $request)
     {
         try {
-            log::info($request->all());
             $validateUser = Validator::make($request->all(), 
             [
                 'name' => 'required',
@@ -34,7 +35,9 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
+                'status' => $request->status,
+                'perfil' => $request->perfil
             ]);
 
             return response()->json([
@@ -62,7 +65,8 @@ class AuthController extends Controller
             $validateUser = Validator::make($request->all(), 
             [
                 'email' => 'required|email',
-                'password' => 'required'
+                'password' => 'required',
+                'status'=>'1'
             ]);
 
             if($validateUser->fails()){
@@ -80,15 +84,35 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::where('email', $request->email)->first();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 200);
+            $user = User::where('email', $request->email)->where('status',1)->first();
+            if(!empty($user)){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User Logged In Successfully',
+                    'token' => $user->createToken("API TOKEN")->plainTextToken
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User Logged In Unsuccessfully',
+                ], 401);
+            }          
 
         } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function logoutUser(Request $request){
+        try {
+            auth()->user()->tokens()->delete();
+            return [
+                'message' => 'user logged out'
+            ];
+        } catch (Exception $th) {
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage()
