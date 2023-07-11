@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('oper_user_access', function (Blueprint $table) {
+        Schema::create('api_users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('status');
             $table->string('perfil');
+            $table->json('entidad')->nullable();
+            $table->json('tramites')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

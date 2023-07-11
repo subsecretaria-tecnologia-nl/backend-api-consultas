@@ -23,27 +23,26 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required'
             ]);
-
             if($validateUser->fails()){
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
+                    'message' => 'validacion error',
                     'errors' => $validateUser->errors()
                 ], 401);
             }
-
-            $user = User::create([
+            User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'status' => $request->status,
-                'perfil' => $request->perfil
+                'status' => "1",
+                'perfil' => "",
+                'entidad' => json_encode(array()),
+                'tramites' => json_encode(array())
             ]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'User Created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'message' => 'Usuerio creado correctamente!!'
             ], 200);
 
         } catch (\Throwable $th) {

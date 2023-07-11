@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'status',
         'perfil',
+        'entidad',
+        'tramites',
     ];
 
     /**
@@ -44,6 +46,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    protected $table = 'oper_user_access';
+    protected $table = 'api_users';
     
 }
