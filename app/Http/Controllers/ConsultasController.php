@@ -70,5 +70,38 @@ class ConsultasController extends Controller
         return response()->json($responseJson);
 
     }
+    public function consultaEntidadFolios(Request $request)
+    { 
+        $responseJson=array();
+        $select=array();
+        try{            
+            $insolicitud=array();            
+            $folios=$request->id_transaccion_motor;
+            $entidad=$request->entidad;
+            $user=$request->user;
+            if($user==null){
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null && $folios==null){
+                $responseJson= $this->reponseVerf('400','entidad / id_transaccion_motor requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null)
+            {
+                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
+            }else{
+                $select=$this->oper_transaccionesdb->findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
+            }           
+                   
+            $responseJson= $this->reponseVerf('202','',$select);  
+         }catch (\Exception $e) {
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
+    }
 
 }
