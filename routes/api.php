@@ -23,20 +23,16 @@ Route::post('/auth/login', [Api\AuthController::class, 'loginUser']);
 Route::middleware('auth:sanctum')->group(function (){
 
     #Route::post('/auth/logout', [Api\AuthController::class, 'logoutUser']);
-
-    #API_USUARIOS para consultar usurios | administrar
     Route::post('/auth/register', [Api\AuthController::class, 'createUser']);
+    #API_USUARIOS para consultar usurios | administrar
     Route::get('/admin/users/{id_?}', [Api\AdministrarUsuariosController::class, 'findUsers']);
-    Route::post('/admin/status', [Api\AdministrarUsuariosController::class, 'updateStatus']);
-    
+    Route::post('/admin/status', [Api\AdministrarUsuariosController::class, 'updateStatus']);    
     Route::put('/admin/users/{id_?}', [Api\AdministrarUsuariosController::class, 'updateUsers']);
-    #API_USUARIOS
-    #ENTIDAD
     Route::post('/admin/entidad', [Api\AdministrarUsuariosController::class, 'findEntidad']);
     Route::post('/admin/entidad-tramite', [Api\AdministrarUsuariosController::class, 'findEntidadTramite']);
     Route::post('/admin/entidad-tramite-user', [Api\AdministrarUsuariosController::class, 'findEntidadTramiteUser']);
     Route::put('/admin/entidad-tramite-user', [Api\AdministrarUsuariosController::class, 'insertEntidadTramite']);
     Route::delete('/admin/entidad-tramite-user', [Api\AdministrarUsuariosController::class, 'deletedEntidadTramite']);
-
-
+    Route::get('/admin/configuracion-ws', [Api\AdministrarUsuariosController::class, 'deletedEntidadTramite']);
+    #CONSULTAS APIS
 });

@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 class AdministrarUsuariosController extends Controller
 {
+    public function __construct(){
+        $this->middleware('authsanctum');
+
+    }
     public function findUsers($id_){
         try {
             if($id_==0 || $id_==""){
@@ -36,7 +40,7 @@ class AdministrarUsuariosController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Usuario Actualizado',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                #'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
 
         } catch (\Exception $th) {
@@ -149,7 +153,7 @@ class AdministrarUsuariosController extends Controller
                 'status' => true,
                 'message' => 'tramites agragados'
             ], 200);
-        } catch (\Throwable $th) {
+        } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@insertEntidadTramite] Error ' . $th->getMessage());
         }
     }
@@ -167,9 +171,16 @@ class AdministrarUsuariosController extends Controller
                 'status' => true,
                 'message' => 'tramites elminados'
             ], 200);
-        } catch (\Throwable $th) {
+        } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@insertEntidadTramite] Error ' . $th->getMessage());
         }
     }
-    #public  function 
+    ###########MANEJO DE CONFIGURACION DE WS EXTERNAS
+    public function findWs(){
+        try {
+            
+        } catch (\Exception $th) {
+            Log::info('[AdministrarUsuariosController@findWs] Error ' . $th->getMessage());
+        }
+    }
 }
