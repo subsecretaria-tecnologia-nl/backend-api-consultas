@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Model\OperPagos;
+use Model\Transacciones;
+
 
 class ConsultasController extends Controller
 {
@@ -17,7 +20,7 @@ class ConsultasController extends Controller
         {
             $user = ( isset($request->user) ) ? $request->user : "user400";
             
-            $entidad= $this->checkEntity($user);
+            // $entidad= $this->checkEntity($user);
 
             if($entidad == 0)
             {
@@ -28,12 +31,12 @@ class ConsultasController extends Controller
             }else{
                 
                 // obtener todos los registros que ya se arrojaron
-               $registros = $this->pagosapi->findWhere(
+               $registros = OperPagos::where(
                     [
                         "entidad"   => $entidad,
                         "procesado" => 0
                     ]
-                );
+                )->get();
 
                if($registros->count() > 0)
                 {
@@ -89,9 +92,9 @@ class ConsultasController extends Controller
             }
             if($entidad==null)
             {
-                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
+                $select=Transacciones::findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
             }else{
-                $select=$this->oper_transaccionesdb->findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
+                $select=Transacciones::findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
             }           
                    
             $responseJson= $this->reponseVerf('202','',$select);  
