@@ -2,7 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers;
 use App\Http\Controllers\Api;
+
+use App\Http\Controllers\ServiciosExternosController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,4 +42,8 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::delete('/admin/entidad-tramite-user', [Api\AdministrarUsuariosController::class, 'deletedEntidadTramite']);
     Route::get('/admin/configuracion-ws', [Api\AdministrarUsuariosController::class, 'deletedEntidadTramite']);
     #CONSULTAS APIS
+    Route::get('/admin/servicios-ws/{user_id?}', [Api\AdministrarUsuariosController::class, 'findWs']);
+    Route::post('/admin/servicios-ws', [Api\AdministrarUsuariosController::class, 'insertServicioWs']);
+    Route::post('/admin/servicios-ws/{id_registro?}', [Api\AdministrarUsuariosController::class, 'updateServicioWs']);
+    Route::get('/cron/servicios', [ServiciosExternosController::class, 'findServicios']);
 });

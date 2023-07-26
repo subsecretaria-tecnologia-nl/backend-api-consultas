@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\OperacioEntidad;
 use App\Models\OperacionEntidadTramite;
 use App\Models\OperacionApiEntidadTramite;
+use App\Models\OperacionApiServicios;
 use App\Models\EgobiernoTipoServicios;
 use App\Models\OperacionEntidad;
 use Illuminate\Support\Facades\Hash;
@@ -176,11 +176,49 @@ class AdministrarUsuariosController extends Controller
         }
     }
     ###########MANEJO DE CONFIGURACION DE WS EXTERNAS
-    public function findWs(){
+    public function findWs($user_id){
         try {
-            
+            if(empty($user_id)){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'parametro requerido',
+                    'data'=>array()
+                ], 400);    
+            }
+            $findWs=OperacionApiServicios::where("user_id",$user_id)->get();
+            return response()->json([
+                'status' => true,
+                'message' => 'registros',
+                'data'=>$findWs
+            ], 200);
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findWs] Error ' . $th->getMessage());
+        }
+    }
+    public function insertServicioWs(Request $request){
+        try {
+            $data=$request->all();
+            $findTramite=OperacionApiServicios::create($data);            
+                       
+            return response()->json([
+                'status' => true,
+                'message' => 'tramites agragados'
+            ], 200);
+        } catch (\Exception $th) {
+            Log::info('[AdministrarUsuariosController@insertServicioWs] Error ' . $th->getMessage());
+        }
+    }
+    public function updateServicioWs($id_regitro,Request $request){
+        try {
+            $data=$request->all();
+            $findTramite=OperacionApiServicios::where("id",$id_regitro)->update($data);           
+                       
+            return response()->json([
+                'status' => true,
+                'message' => 'tramites agragados'
+            ], 200);
+        } catch (\Exception $th) {
+            Log::info('[AdministrarUsuariosController@updateServicioWs] Error ' . $th->getMessage());
         }
     }
 }
