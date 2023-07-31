@@ -24,7 +24,13 @@ return new class extends Migration
             $table->string('alias_usuario',200); 
             $table->string('alias_password',200);
             $table->string('token',200);
+            $table->string('token_varible',200);
+            $table->string('token_response',200);
+            $table->string('token_operacion',200);
             $table->string('parametro',100);
+            $table->string('servicio_varible',200);
+            $table->string('servicio_response',200);
+            $table->string('servicio_operacion',200);
             $table->text('header_token'); 
             $table->text('footer_token');
             $table->text('header'); 
