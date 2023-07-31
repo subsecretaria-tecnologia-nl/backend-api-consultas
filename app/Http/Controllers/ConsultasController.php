@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Model\OperPagos;
+use Model\OperacionEntidad;
 use Model\Transacciones;
 
 
@@ -12,28 +13,13 @@ class ConsultasController extends Controller
 {
     public function consultaPagos(Request $request)
     { 
-        //log::info($request);
-        $responseJson=array();
-        $response=array();
         
         try
         {
-            $user = ( isset($request->user) ) ? $request->user : "user400";
-            
-            // $entidad= $this->checkEntity($user);
-
-            if($entidad == 0)
-            {
-                $responseJson= $this->reponseVerf('400','user requerido',[]);
-                
-                return response()->json($responseJson);
-
-            }else{
-                
-                // obtener todos los registros que ya se arrojaron
-               $registros = OperPagos::where(
+                $entidad = OperacionEntidad::find($request->entidad);
+                $registros = OperPagos::where(
                     [
-                        "entidad"   => $entidad,
+                        "entidad"   => $request->entidad,
                         "procesado" => 0
                     ]
                 )->get();
@@ -44,8 +30,8 @@ class ConsultasController extends Controller
                     foreach($registros as $r)
                     {   
                         $temp[]= array(
-                            "usuario"               => $user,
-                            "entidad"               => $entidad,
+                            "usuario"               => $request->user,
+                            "entidad"               => $entidad->nombre,
                             "referencia"            => $r->referencia,
                             "id_transaccion_motor"  => $r->id_transaccion_motor,
                             "id_transaccion"        => $r->id_transaccion,
@@ -60,47 +46,55 @@ class ConsultasController extends Controller
                         
                     }
 
-                    $responseJson= $this->reponseVerf('202','',$temp);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Registros encontrados', 
+                        'datos'=>$temp
+                    ], 200);
                 }else{
-                    $responseJson= $this->reponseVerf('202','Sin registros',array());
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'No se encontraronr egistros'
+                    ], 400);
                 }
-            }
+
+            
+    
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
-            $responseJson= $this->reponseVerf('400','ocurrio un error',[]);     
-          return  response()->json($responseJson);            
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' .$e->getMessage()
+            ], 400);              
         }
-        return response()->json($responseJson);
 
     }
     public function consultaEntidadFolios(Request $request)
     { 
-        $responseJson=array();
-        $select=array();
-        try{            
-            $insolicitud=array();            
+        try{                    
             $folios=$request->id_transaccion_motor;
             $entidad=$request->entidad;
             $user=$request->user;
-            if($user==null){
-                $responseJson= $this->reponseVerf('400','user requerido',[]);
-                return response()->json($responseJson);
-            }
-            if($entidad==null && $folios==null){
-                $responseJson= $this->reponseVerf('400','entidad / id_transaccion_motor requerido',[]);
-                return response()->json($responseJson);
-            }
+          
+        
             if($entidad==null)
             {
-                $select=Transacciones::findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
+                $datos=Transacciones::findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
             }else{
-                $select=Transacciones::findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
+                $datos=Transacciones::findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
             }           
-                   
-            $responseJson= $this->reponseVerf('202','',$select);  
+            return response()->json([
+                'status' => true,
+                'message' => 'Registros encontrados', 
+                'datos'=>$datos
+            ], 200); 
+           
          }catch (\Exception $e) {
-            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
-            log::info('PagosVerificados insert' . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error folios entidad: ' .$e->getMessage()
+            ], 400); 
+            log::info('Error folios entidad' . $e->getMessage());
           return  response()->json($responseJson);            
         }
         return response()->json($responseJson);

@@ -46,4 +46,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/admin/servicios-ws', [Api\AdministrarUsuariosController::class, 'insertServicioWs']);
     Route::post('/admin/servicios-ws/{id_registro?}', [Api\AdministrarUsuariosController::class, 'updateServicioWs']);
     Route::get('/cron/servicios', [ServiciosExternosController::class, 'findServicios']);
+
+    Route::get('/consulta-pagos','ConsultasController@consultaPagos');
+    Route::get('/consulta-folios','ConsultasController@consultaEntidadFolios');
 });
