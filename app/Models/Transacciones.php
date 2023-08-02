@@ -36,11 +36,10 @@ class Transacciones extends Model
     protected $table = "oper_transacciones";
     public $timestamps = false;
 
-    public function findTransaccionesFolio($user,$variable1,$variable2)
+    public static function findTransaccionesFolio($entidad,$variable1,$variable2)
     {
         
-        $data = Transacciones::where('oper_transacciones.estatus','0')
-        ->select('oper_usuariobd_entidad.usuariobd AS usuario',
+        $data = Transacciones::select(
             'oper_transacciones.entidad AS entidad',
             'oper_transacciones.referencia AS referencia',
             'oper_transacciones.id_transaccion_motor AS id_transaccion_motor',
@@ -56,9 +55,10 @@ class Transacciones extends Model
         ->leftjoin('oper_metodopago','oper_metodopago.id','=','oper_transacciones.metodo_pago_id')
         //->leftjoin('oper_banco','oper_banco.id','=','oper_transacciones.banco')
         ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','=','oper_transacciones.referencia')
-        ->leftjoin('oper_usuariobd_entidad','oper_usuariobd_entidad.id_entidad','=','oper_transacciones.entidad')
-         ->leftjoin('oper_pagos_solicitud','oper_pagos_solicitud.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
-         ->where('oper_usuariobd_entidad.usuariobd' ,'=', $user)  
+        #->leftjoin('oper_usuariobd_entidad','oper_usuariobd_entidad.id_entidad','=','oper_transacciones.entidad')
+         #->leftjoin('oper_pagos_solicitud','oper_pagos_solicitud.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
+         ->whereIn("oper_transacciones.entidad",$entidad)
+         #->where('oper_usuariobd_entidad.usuariobd' ,'=', $user)  
          ->whereIn($variable1,$variable2) 
         //->whereIn('oper_transacciones.entidad' ,$entidad)  
         //->Where('oper_pagos_solicitud.id_transaccion_motor','=',null)

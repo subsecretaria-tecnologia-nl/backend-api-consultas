@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use App\Http\Controllers\Api;
 
 use App\Http\Controllers\ServiciosExternosController;
+use App\Http\Controllers\ConsultasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,9 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/consulta-pagos','ConsultasController@consultaPagos');
-Route::get('/verifica-pagos','ConsultasController@PagosVerificados');
-Route::get('/consulta-folios','ConsultasController@consultaEntidadFolios');
+
 Route::post('/auth/login', [Api\AuthController::class, 'loginUser']);
 
 Route::middleware('auth:sanctum')->group(function (){
@@ -47,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/admin/servicios-ws/{id_registro?}', [Api\AdministrarUsuariosController::class, 'updateServicioWs']);
     Route::get('/cron/servicios', [ServiciosExternosController::class, 'findServicios']);
 
-    Route::get('/consulta-pagos','ConsultasController@consultaPagos');
-    Route::get('/consulta-folios','ConsultasController@consultaEntidadFolios');
+    #CONSULTA TRANSACCIONES
+    Route::get('/consulta-pagos',[ConsultasController::class, 'consultaPagos']);
+    Route::get('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
+    Route::post('/consulta-folios',[ConsultasController::class, 'consultaEntidadFolios']);
 });

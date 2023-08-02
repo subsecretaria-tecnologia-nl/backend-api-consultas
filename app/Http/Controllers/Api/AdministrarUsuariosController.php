@@ -198,7 +198,7 @@ class AdministrarUsuariosController extends Controller
     public function insertServicioWs(Request $request){
         try {
             $data=$request->all();
-            $findTramite=OperacionApiServicios::create($data);            
+            OperacionApiServicios::create($data);            
                        
             return response()->json([
                 'status' => true,
@@ -211,7 +211,7 @@ class AdministrarUsuariosController extends Controller
     public function updateServicioWs($id_regitro,Request $request){
         try {
             $data=$request->all();
-            $findTramite=OperacionApiServicios::where("id",$id_regitro)->update($data);           
+            OperacionApiServicios::where("id",$id_regitro)->update($data);           
                        
             return response()->json([
                 'status' => true,
