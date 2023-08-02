@@ -41,13 +41,11 @@ class ConsultasController extends Controller
                         "FechaTransaccion"      => $r->FechaTransaccion,
                         "FechaPago"             => $r->FechaPago,
                         "FechaConciliacion"     => $r->FechaConciliacion,
-                    );
-                    
+                    );                    
                 }
                 return response()->json([
                     'status' => true,
                     'message' => 'Registros encontrados', 
-                    'usuario' => 'Registros encontrados', 
                     'datos'=>$temp
                 ], 200);
             }else{
@@ -64,6 +62,46 @@ class ConsultasController extends Controller
                 'message' => 'Error: ' .$e->getMessage()
             ], 400);              
         }
+
+    }
+    public function PagosVerificados(Request $request){ 
+        $user=auth()->user();
+        $entidad = OperacionApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+        $responseJson=array();
+        $noInsert=array();
+        //log::info($request->request);
+
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] USER " . $user->email);
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] FOLIOS " . json_encode($request->id_transaccion_motor));
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] NOW " . date("Y-m-d H:i:s"));
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] ALL " . json_encode($request->all()));
+
+        try
+        {
+            $folios=$request->id_transaccion_motor;
+            $user = ( isset($request->user) ) ? $request->user : "user400";
+            
+            $entidad= $this->checkEntity($user);
+
+            if($entidad == 0){
+                $responseJson= $this->reponseVerf('400','user requerido',[]);                
+                return response()->json($responseJson);
+            }else{
+                if(empty($folios)){
+                    $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
+                    return response()->json($responseJson);
+                }else{
+                    OperPagos::whereIn('id_transaccion_motor',$folios)->update(['procesado' => 1]);
+                    $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);
+
+                }
+            }        
+         }catch (\Exception $e) {
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
 
     }
     public function consultaEntidadFolios(Request $request){ 
@@ -97,6 +135,15 @@ class ConsultasController extends Controller
                 'message' => 'Error folios entidad: ' .$e->getMessage()
             ], 400);                       
         }
+    }
+    private function reponseVerf($status,$error,$responseJ){
+        $response=array();
+        $response= array(
+            'code' => $status,
+            'status' => $error,
+            'response' => $responseJ,
+        );
+        return $response;
     }
 
 }

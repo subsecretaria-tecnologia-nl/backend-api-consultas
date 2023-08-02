@@ -164,6 +164,7 @@ class ServiciosExternosController extends Controller
             $response=array();
             foreach ($fServicios as $f) {
                 $response=$this->findServiciosEntidad($f);
+                #dd($response);
                 if($f->tipo=="XML"){
                     $response =$this->consumirApiXML($f,$response); 
                 }else{
