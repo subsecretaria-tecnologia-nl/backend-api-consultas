@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-
+use Carbon\Carbon;
 class AuthController extends Controller
 {
+     
     public function createUser(Request $request)
     {
         try {
@@ -60,6 +61,7 @@ class AuthController extends Controller
      */
     public function loginUser(Request $request)
     {
+        $minutes=env("TOKEN_EXPIRES_MINUTES");
         try {
             $validateUser = Validator::make($request->all(), 
             [
@@ -88,7 +90,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'User Logged In Successfully',
-                    'token' => $user->createToken("API TOKEN")->plainTextToken
+                    'token' => $user->createToken("API TOKEN",["*"],Carbon::now()->addMinutes($minutes))->plainTextToken
                 ], 200);
             }else{
                 return response()->json([
