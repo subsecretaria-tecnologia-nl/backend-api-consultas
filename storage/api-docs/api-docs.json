@@ -1,0 +1,152 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Your super  ApplicationAPI",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/backend-api-consultas/public"
+        }
+    ],
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Login Token"
+                ],
+                "summary": "TOKEN",
+                "description": "User Login Token",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User Logged In Successfully."
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|0JJCOd0QSTajchCUf5fYPex0ZKThSjLWefe3OfTb"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Login Unsuccessfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/consulta-pagos": {
+            "get": {
+                "tags": [
+                    "Consultas"
+                ],
+                "summary": "Consulta de transacciones",
+                "description": "Consulta de transacciones",
+                "operationId": "1210c07ca54410ac8a96555f74fe180f",
+                "responses": {
+                    "200": {
+                        "description": "Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registros encontrados"
+                                        },
+                                        "datos": {
+                                            "type": "array",
+                                            "items": {},
+                                            "collectionFormat": "multi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "A short description for oauth2 security ",
+                "scheme": "bearer",
+                "in": "header",
+                "bearerAuth": "bearerAuth",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": {
+        "passport": {
+            "type": "oauth2",
+            "description": "Laravel passport oauth2 security.",
+            "in": "header",
+            "scheme": "https",
+            "flows": {
+                "password": {
+                    "authorizationUrl": "http://localhost:8000/oauth/authorize",
+                    "tokenUrl": "http://localhost:8000/oauth/token",
+                    "refreshUrl": "http://localhost:8000/token/refresh",
+                    "scopes": []
+                }
+            }
+        }
+    }
+}

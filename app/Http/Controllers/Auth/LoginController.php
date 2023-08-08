@@ -9,11 +9,44 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use App\Models\User;
 
+
 class LoginController extends Controller
 {
    /**
-     * Instantiate a new LoginRegisterController instance.
-     */
+        * @OA\Post(
+        * path="/api/auth/login",
+        * operationId="login",
+        * tags={"Login Token"},
+        * summary="TOKEN",
+        * description="User Login Token",
+     *      @OA\RequestBody(
+        *         @OA\JsonContent(),
+        *         @OA\MediaType(
+        *            mediaType="multipart/form-data",
+        *            @OA\Schema(
+        *               type="object",
+        *               required={"email", "password"},
+        *               @OA\Property(property="email", type="email"),
+        *               @OA\Property(property="password", type="password")
+        *            ),
+        *        ),
+        *    ),     
+        *      @OA\Response(
+        *     response=200,
+        *     description="Login Successfully",
+        *      @OA\JsonContent(
+        *        @OA\Property(property="status", type="string", example=true),
+        *        @OA\Property(property="message", type="string", example="User Logged In Successfully."),
+        *        @OA\Property(property="token", type="string", example="1|0JJCOd0QSTajchCUf5fYPex0ZKThSjLWefe3OfTb")
+        *        )
+        *      ),
+        *      @OA\Response(
+        *          response=400,
+        *          description="Login Unsuccessfully",
+        *          @OA\JsonContent()
+        *       )
+        * )
+        */
     public function __construct()
     {
         $this->middleware('guest')->except([
@@ -21,22 +54,11 @@ class LoginController extends Controller
         ]);
     }
 
-    /**
-     * Display a registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function register()
     {
         return view('auth.register');
     }
 
-    /**
-     * Store a new user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -58,22 +80,11 @@ class LoginController extends Controller
         ->withSuccess('You have successfully registered & logged in!');
     }
 
-    /**
-     * Display a login form.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function login()
     {
         return view('auth.login');
     }
 
-    /**
-     * Authenticate the user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
@@ -94,11 +105,6 @@ class LoginController extends Controller
 
     } 
     
-    /**
-     * Display a dashboard to authenticated users.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function dashboard()
     {
         if(Auth::check())
@@ -112,12 +118,6 @@ class LoginController extends Controller
         ])->onlyInput('email');
     } 
     
-    /**
-     * Log out the user from application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function logout(Request $request)
     {
         Auth::logout();

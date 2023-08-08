@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('/auth/login', [Api\AuthController::class, 'loginUser']);
-
+Route::get('/download-file',[ConsultasController::class, 'downloadFile'])->name("api/download-file");
 Route::middleware('auth:sanctum')->group(function (){
 
     #Route::post('/auth/logout', [Api\AuthController::class, 'logoutUser']);
@@ -50,4 +50,5 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/consulta-pagos',[ConsultasController::class, 'consultaPagos']);
     Route::get('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
     Route::post('/consulta-folios',[ConsultasController::class, 'consultaEntidadFolios']);
+    Route::post('/consulta-archivos',[ConsultasController::class, 'findTransacciones']);
 });
