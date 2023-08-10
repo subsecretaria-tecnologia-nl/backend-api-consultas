@@ -5,14 +5,14 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'L5 Swagger UI',
+                'title' => 'Documentación Apis',
             ],
 
             'routes' => [
                 /*
                  * Route for accessing api documentation interface
                 */
-                'api' => 'api/documentation',
+                'api' => 'documentacion',
             ],
             'paths' => [
                 /*
@@ -61,7 +61,7 @@ return [
              * Middleware allows to prevent unexpected access to API documentation
             */
             'middleware' => [
-                'api' => [],
+                'api' => ['web' , 'auth'],
                 'asset' => [],
                 'docs' => [],
                 'oauth2_callback' => [],
@@ -155,7 +155,7 @@ return [
             'securitySchemes' => [
               'bearerAuth' => [ // Unique name of security
                 'type' => 'http', 
-                'description' => 'A short description for oauth2 security ',
+                'description' => 'Bearer',
                 'scheme'=> 'bearer',
                 'in' => 'header',
                 'bearerAuth' => 'bearerAuth',
@@ -217,7 +217,7 @@ return [
                 'bearerAuth' => 'bearerAuth',
                 'bearerFormat'=> 'JWT'
         
-               ],*/
+               ],
                 // Open API 3.0 support
                 'passport' => [ // Unique name of security
                     'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
@@ -232,7 +232,7 @@ return [
                             "scopes" => []
                         ],
                     ],
-                ],
+                ],*/
                 
             ]
            
@@ -286,7 +286,7 @@ return [
                  * 'full' (expands the tags and operations),
                  * 'none' (expands nothing).
                  */
-                'doc_expansion' => env('L5_SWAGGER_UI_DOC_EXPANSION', 'none'),
+                'doc_expansion' => env('L5_SWAGGER_UI_DOC_EXPANSION', 'list'),
 
                 /**
                  * If set, enables filtering. The top bar will show an edit box that
@@ -296,7 +296,7 @@ return [
                  * is case-sensitive matching the filter expression anywhere inside
                  * the tag.
                  */
-                'filter' => env('L5_SWAGGER_UI_FILTERS', true), // true | false
+                'filter' => env('L5_SWAGGER_UI_FILTERS', false), // true | false
             ],
 
             'authorization' => [

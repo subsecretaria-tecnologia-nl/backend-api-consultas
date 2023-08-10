@@ -12,41 +12,6 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-   /**
-        * @OA\Post(
-        * path="/api/auth/login",
-        * operationId="login",
-        * tags={"Login Token"},
-        * summary="TOKEN",
-        * description="User Login Token",
-     *      @OA\RequestBody(
-        *         @OA\JsonContent(),
-        *         @OA\MediaType(
-        *            mediaType="multipart/form-data",
-        *            @OA\Schema(
-        *               type="object",
-        *               required={"email", "password"},
-        *               @OA\Property(property="email", type="email"),
-        *               @OA\Property(property="password", type="password")
-        *            ),
-        *        ),
-        *    ),     
-        *      @OA\Response(
-        *     response=200,
-        *     description="Login Successfully",
-        *      @OA\JsonContent(
-        *        @OA\Property(property="status", type="string", example=true),
-        *        @OA\Property(property="message", type="string", example="User Logged In Successfully."),
-        *        @OA\Property(property="token", type="string", example="1|0JJCOd0QSTajchCUf5fYPex0ZKThSjLWefe3OfTb")
-        *        )
-        *      ),
-        *      @OA\Response(
-        *          response=400,
-        *          description="Login Unsuccessfully",
-        *          @OA\JsonContent()
-        *       )
-        * )
-        */
     public function __construct()
     {
         $this->middleware('guest')->except([
@@ -95,8 +60,8 @@ class LoginController extends Controller
         if(Auth::attempt($credentials))
         {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')
-                ->withSuccess('You have successfully logged in!');
+           // return redirect()->route('dashboard')
+               // ->withSuccess('You have successfully logged in!');
         }
 
         return back()->withErrors([

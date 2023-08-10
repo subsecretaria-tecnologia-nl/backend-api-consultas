@@ -7,6 +7,7 @@ use App\Http\Controllers\Api;
 
 use App\Http\Controllers\ServiciosExternosController;
 use App\Http\Controllers\ConsultasController;
+use App\Http\Controllers\SwaggerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::get('/download-file',[ConsultasController::class, 'downloadFile'])->name(
 Route::middleware('auth:sanctum')->group(function (){
 
     #Route::post('/auth/logout', [Api\AuthController::class, 'logoutUser']);
+    Route::get('/swagger/home', [Api\SwaggerController::class, 'index']);
     Route::post('/auth/register', [Api\AuthController::class, 'createUser']);
     #API_USUARIOS para consultar usurios | administrar
     Route::get('/admin/users/{id_?}', [Api\AdministrarUsuariosController::class, 'findUsers']);
@@ -48,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     #CONSULTA TRANSACCIONES
     Route::get('/consulta-pagos',[ConsultasController::class, 'consultaPagos']);
-    Route::get('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
+    Route::post('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
     Route::post('/consulta-folios',[ConsultasController::class, 'consultaEntidadFolios']);
     Route::post('/consulta-archivos',[ConsultasController::class, 'findTransacciones']);
 });

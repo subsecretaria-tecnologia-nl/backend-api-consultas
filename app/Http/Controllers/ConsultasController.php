@@ -14,32 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 class ConsultasController extends Controller
 {
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     * 
-     * 
- * @OA\Get(
- * path="/api/consulta-pagos",
- * summary="Consulta de transacciones",
- * description="Consulta de transacciones",
- * tags={"Consultas"},
- * security={{"bearerAuth":{}}},
-*     @OA\Response(
-*     response=200,
-*     description="Successfully",
-*      @OA\JsonContent(
-*        @OA\Property(property="status", type="string", example=true),
-*        @OA\Property(property="message", type="string", example="Registros encontrados"),
-*        @OA\Property(
-*              property="datos",
-*              type="array",
-*              collectionFormat="multi",
-*              @OA\Items()
-*        )
-*      )
-*    )
-* )
-*/
+
     public function consultaPagos(Request $request){         
         try{
             $user=auth()->user();
@@ -105,17 +80,14 @@ class ConsultasController extends Controller
         Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] NOW " . date("Y-m-d H:i:s"));
         Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] ALL " . json_encode($request->all()));
 
-        try
-        {
+        try{            
             $folios=$request->id_transaccion_motor;
-            $user = ( isset($request->user) ) ? $request->user : "user400";
-            
-            $entidad= $this->checkEntity($user);
-
-            if($entidad == 0){
+            //$user = ( isset($request->user) ) ? $request->user : "user400";
+            //$entidad= $this->checkEntity($user);
+           /* if($entidad == 0){
                 $responseJson= $this->reponseVerf('400','user requerido',[]);                
                 return response()->json($responseJson);
-            }else{
+            }else{*/
                 if(empty($folios)){
                     $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
                     return response()->json($responseJson);
@@ -124,7 +96,7 @@ class ConsultasController extends Controller
                     $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);
 
                 }
-            }        
+                log::info($folios);           // }        
          }catch (\Exception $e) {
             $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
@@ -150,6 +122,13 @@ class ConsultasController extends Controller
                     'message' => 'Sin Registros encontrados', 
                     'datos'=>[]
                 ], 200); 
+            }
+            if(count($datos)==0){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Sin Registros encontrados', 
+                    'datos'=>[]
+                ], 200);   
             }           
             return response()->json([
                 'status' => true,
@@ -180,11 +159,12 @@ class ConsultasController extends Controller
             $data=OperPagos::select("*");
             $fecha="fechaTransaccion";
             $fecha_hoy=Carbon::now()->format('Y-m-d');
-            if(!empty($request->fecha) ){
-                $fecha=$request->fecha;
+            if(!empty($request->fecha_tipo) ){
+                $fecha=$request->fecha_tipo;
             }
-            if(!empty($request->fecha_inicio) && !empty($request->fecha_fin)){
-                $data=$data->whereBetween($fecha,[$request->fecha_inicio,$request->fecha_fin]);
+            if(!empty($request->fecha_registro)){
+                $date=Carbon::parse($request->fecha_registro)->format('Y-m-d');
+                $data=$data->whereBetween($fecha,[$date . ' 00:00:00',$fecha_hoy.'23:59:59']);
             }else{
                 $data=$data->whereBetween($fecha,[$fecha_hoy.' 00:00:00',$fecha_hoy.'23:59:59']);
             }

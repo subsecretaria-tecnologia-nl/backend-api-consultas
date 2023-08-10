@@ -1,10 +1,13 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Your super  ApplicationAPI",
-        "version": "1.0.0"
+        "title": "API's Consultas de transacciones",
+        "version": "1.0.1"
     },
     "servers": [
+        {
+            "url": "http://localhost/backend-api-consultas/public"
+        },
         {
             "url": "http://localhost/backend-api-consultas/public"
         }
@@ -13,7 +16,7 @@
         "/api/auth/login": {
             "post": {
                 "tags": [
-                    "Login Token"
+                    "Token"
                 ],
                 "summary": "TOKEN",
                 "description": "User Login Token",
@@ -84,8 +87,8 @@
                     "Consultas"
                 ],
                 "summary": "Consulta de transacciones",
-                "description": "Consulta de transacciones",
-                "operationId": "1210c07ca54410ac8a96555f74fe180f",
+                "description": "Consulta de transacciones pagadas por entidad",
+                "operationId": "72aa7439e21ddbffa4aed650bb5e7cab",
                 "responses": {
                     "200": {
                         "description": "Successfully",
@@ -119,33 +122,236 @@
                     }
                 ]
             }
+        },
+        "/api/verifica-pagos": {
+            "post": {
+                "tags": [
+                    "Consultas"
+                ],
+                "summary": "Verifica pagos",
+                "description": "Verificacion de transacciones consultadas",
+                "operationId": "verifica_pagos",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_transaccion_motor": {
+                                        "type": "object",
+                                        "collectionFormat": "multi",
+                                        "example": "[2000000000]"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": 202
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Guardado exitoso."
+                                        },
+                                        "response": {
+                                            "type": "string",
+                                            "example": "[]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Unsuccessfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": 400
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "id_transaccion_motor requerido."
+                                        },
+                                        "response": {
+                                            "type": "string",
+                                            "example": "[]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/consulta-folios": {
+            "post": {
+                "tags": [
+                    "Consultas"
+                ],
+                "summary": "Consulta de folios",
+                "description": "consulta de folios",
+                "operationId": "consulta_folios",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_transaccion_motor": {
+                                        "type": "object",
+                                        "collectionFormat": "multi",
+                                        "example": "[2000000000]"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": 202
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Registros encontrados"
+                                        },
+                                        "response": {
+                                            "type": "string",
+                                            "example": "[]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Unsuccessfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": 400
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Sin Registros encontrado."
+                                        },
+                                        "response": {
+                                            "type": "string",
+                                            "example": "[]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/consulta-archivos": {
+            "post": {
+                "tags": [
+                    "Consultas"
+                ],
+                "summary": "Consulta archivos",
+                "description": "consulta por fecha y genera una url de descarga de archivo en txt",
+                "operationId": "consulta_archivos",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fecha_registro": {
+                                        "type": "object",
+                                        "collectionFormat": "multi",
+                                        "example": "2021-02-22"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Archivo disponible, descarga una vez, expira en 24hrs."
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://website.com"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
-                "description": "A short description for oauth2 security ",
+                "description": "Bearer token",
                 "scheme": "bearer",
                 "in": "header",
                 "bearerAuth": "bearerAuth",
                 "bearerFormat": "JWT"
-            }
-        }
-    },
-    "security": {
-        "passport": {
-            "type": "oauth2",
-            "description": "Laravel passport oauth2 security.",
-            "in": "header",
-            "scheme": "https",
-            "flows": {
-                "password": {
-                    "authorizationUrl": "http://localhost:8000/oauth/authorize",
-                    "tokenUrl": "http://localhost:8000/oauth/token",
-                    "refreshUrl": "http://localhost:8000/token/refresh",
-                    "scopes": []
-                }
             }
         }
     }
