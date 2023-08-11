@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use App\Models\User;
-
+use L5Swagger\Http\Controllers\SwaggerAssetController;
 
 class LoginController extends Controller
 {
+    protected $swaggerVar;
     public function __construct()
     {
         $this->middleware('guest')->except([
             'logout', 'dashboard'
         ]);
+        $this->swaggerVar= env('L5_SWAGGER_GENERATE_ALWAYS', false);
+
     }
 
     public function register()
@@ -74,7 +77,13 @@ class LoginController extends Controller
     {
         if(Auth::check())
         {
-            return view('auth.dashboard');
+            if( $this->swaggerVar){
+                return redirect('documentacion');
+            }else{
+                return view('auth.dashboard');
+            }
+
+            
         }
         
         return redirect()->route('login')
