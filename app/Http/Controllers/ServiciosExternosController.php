@@ -157,19 +157,23 @@ class ServiciosExternosController extends Controller
             Log::Info('AdministrarApiController@apiLoginUser ' . $e);
         }
     }
-    public function findServicios(){
+    public function findServicios($tipo){
         try {
-            $fServicios=OperacionApiServicios::where("tiempo","1")
+            $fServicios=OperacionApiServicios::where("tiempo",$tipo)
+            ->where("status","0")
             ->get();
             $response=array();
             foreach ($fServicios as $f) {
+                OperacionApiServicios::where("id",$f->id)->update(["status"=>"2"]);
+            }
+            foreach ($fServicios as $f) {
                 $response=$this->findServiciosEntidad($f);
-                dd($response);
                 if($f->tipo=="XML"){
                     $response =$this->consumirApiXML($f,$response); 
                 }else{
                     $response= $this->consumirApiJSON($f,$response); 
                 }
+                OperacionApiServicios::where("id",$f->id)->update(["status"=>"1"]);
             }
             return $response;
         } catch (\Exception $th) {

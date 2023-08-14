@@ -20,10 +20,7 @@
         box-sizing: inherit;
     }
 
-    body {
-      margin:0;
-      background: #fafafa;
-    }
+   
     </style>
 </head>
 
