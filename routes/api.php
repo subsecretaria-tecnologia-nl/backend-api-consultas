@@ -8,6 +8,7 @@ use App\Http\Controllers\Api;
 use App\Http\Controllers\ServiciosExternosController;
 use App\Http\Controllers\ConsultasController;
 use App\Http\Controllers\SwaggerController;
+use App\Http\Controllers\AlfrescoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,9 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
     Route::post('/consulta-folios',[ConsultasController::class, 'consultaEntidadFolios']);
     Route::post('/consulta-archivos',[ConsultasController::class, 'findTransacciones']);
+
+    #API ALFRESCO SERVICIO concentracion de archivos
+    Route::post('/folder',[AlfrescoController::class, 'createfolder']);
+    Route::post('/verifica-pagos',[AlfrescoController::class, 'PagosVerificados']);
+
 });

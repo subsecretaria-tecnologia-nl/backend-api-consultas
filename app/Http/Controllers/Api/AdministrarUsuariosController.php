@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\OperacionEntidadTramite;
-use App\Models\OperacionApiEntidadTramite;
-use App\Models\OperacionApiServicios;
-use App\Models\EgobiernoTipoServicios;
-use App\Models\OperacionEntidad;
+use App\Models\OperEntidadTramite;
+use App\Models\OperApiEntidadTramite;
+use App\Models\OperApiServicios;
+use App\Models\EgobTipoServicios;
+use App\Models\OperEntidad;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -73,10 +73,10 @@ class AdministrarUsuariosController extends Controller
             //$user=auth()->user();
             $user_id=$request->user_id;
             $response=array();
-            $arrayPermiso=OperacionApiEntidadTramite::where("user_id",$user_id)->pluck("id_relacion")->toArray();
-            $fEntidadD=OperacionEntidad::all();
+            $arrayPermiso=OperApiEntidadTramite::where("user_id",$user_id)->pluck("id_relacion")->toArray();
+            $fEntidadD=OperEntidad::all();
             foreach($fEntidadD as $e){
-                $findTramite=OperacionEntidadTramite::from("oper_entidadtramite as rel")->where("entidad_id",$e->id)
+                $findTramite=OperEntidadTramite::from("oper_entidadtramite as rel")->where("entidad_id",$e->id)
                 ->leftjoin("egobierno.tipo_servicios as tramite","tramite.Tipo_Code","rel.tipo_servicios_id")
                 ->select("rel.id as id_relacion","tramite.Tipo_Code as id_servicio","tramite.Tipo_Descripcion as servicio")->whereNotIn("rel.id",$arrayPermiso)->get();  
                 if(count($findTramite)>0){
@@ -96,9 +96,9 @@ class AdministrarUsuariosController extends Controller
         try {
             $user_id=$request->user_id;
             $response=array();
-            $fEntidadD=OperacionEntidad::all();
+            $fEntidadD=OperEntidad::all();
             foreach($fEntidadD as $e){
-                $findTramite=OperacionApiEntidadTramite::from("api_entidad_tramite as rel")
+                $findTramite=OperApiEntidadTramite::from("api_entidad_tramite as rel")
                 ->where("user_id",$user_id)
                 ->where("rel.entidad",$e->id)
                 ->leftjoin("egobierno.tipo_servicios as tramite","tramite.Tipo_Code","rel.tramite")
@@ -120,12 +120,12 @@ class AdministrarUsuariosController extends Controller
         try {
             $user_id=$request->user_id;
             if($request->var==1){
-                $findTramite=OperacionApiEntidadTramite::where("user_id",$user_id)
+                $findTramite=OperApiEntidadTramite::where("user_id",$user_id)
                 ->where("entidad",$request->entidad)
                 ->where("tramite",$request->tramite)
                 ->get();
                 if(count($findTramite)==0){
-                    $findTramite=OperacionApiEntidadTramite::create([
+                    $findTramite=OperApiEntidadTramite::create([
                         "user_id"=>$user_id,
                         "id_relacion"=>$request->id_relacion,
                         "entidad"=>$request->entidad,
@@ -133,14 +133,14 @@ class AdministrarUsuariosController extends Controller
                     ]);
                 }
             }else{
-                $fEntidadD=OperacionEntidadTramite::where("entidad_id",$request->entidad)->get();
+                $fEntidadD=OperEntidadTramite::where("entidad_id",$request->entidad)->get();
                 foreach ($fEntidadD as $e) {
-                    $findTramiteE=OperacionApiEntidadTramite::where("user_id",$user_id)
+                    $findTramiteE=OperApiEntidadTramite::where("user_id",$user_id)
                     ->where("entidad",$e->entidad_id)
                     ->where("tramite",$e->tipo_servicios_id)
                     ->get();
                     if(count($findTramiteE)==0){
-                        $findTramite=OperacionApiEntidadTramite::create([
+                        $findTramite=OperApiEntidadTramite::create([
                             "user_id"=>$user_id,
                             "id_relacion"=>$e->id,
                             "entidad"=>$e->entidad_id,
@@ -161,7 +161,7 @@ class AdministrarUsuariosController extends Controller
         try {
             $user_id=$request->user_id;
 
-            $findTramite=OperacionApiEntidadTramite::where("user_id",$user_id)
+            $findTramite=OperApiEntidadTramite::where("user_id",$user_id)
                 ->where("entidad",$request->entidad);
             if($request->var==1){
                 $findTramite->where("tramite",$request->tramite);                
@@ -185,7 +185,7 @@ class AdministrarUsuariosController extends Controller
                     'data'=>array()
                 ], 400);    
             }
-            $findWs=OperacionApiServicios::where("user_id",$user_id)->get();
+            $findWs=OperApiServicios::where("user_id",$user_id)->get();
             return response()->json([
                 'status' => true,
                 'message' => 'registros',
@@ -198,7 +198,7 @@ class AdministrarUsuariosController extends Controller
     public function insertServicioWs(Request $request){
         try {
             $data=$request->all();
-            OperacionApiServicios::create($data);            
+            OperApiServicios::create($data);            
                        
             return response()->json([
                 'status' => true,
@@ -211,7 +211,7 @@ class AdministrarUsuariosController extends Controller
     public function updateServicioWs($id_regitro,Request $request){
         try {
             $data=$request->all();
-            OperacionApiServicios::where("id",$id_regitro)->update($data);           
+            OperApiServicios::where("id",$id_regitro)->update($data);           
                        
             return response()->json([
                 'status' => true,

@@ -23,7 +23,12 @@ class Authenticate
         $url =$request->url();
         $request=$request;
         $user=auth()->user();
-        #log::info($user);
+        /*log::info("ip config " . $user->ip);
+        log::info("ip client " . $request->ip());
+        if ($request->ip()!=$user->ip) {
+            return response()->json(['code' => '403','message' => 'sin permisos para acceder'], 403);
+        }*/
         return $next($request);
+        
     }
 }

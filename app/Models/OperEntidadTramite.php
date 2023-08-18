@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OperacionEntidadTramite extends Model
+class OperEntidadTramite extends Model
 {
     use HasFactory;
     protected $connection = "mysql";

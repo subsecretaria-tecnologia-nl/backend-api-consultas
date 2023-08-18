@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\OperPagos;
-use App\Models\OperacionApiEntidadTramite;
+use App\Models\OperApiEntidadTramite;
 use App\Models\Transacciones;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 class ConsultasController extends Controller
 {
-
+    public function __construct(){
+        $this->middleware('authsanctum');
+    }
     public function consultaPagos(Request $request){         
         try{
             $user=auth()->user();
-            $entidad = OperacionApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+            $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
             #dd($entidad);
             $registros = OperPagos::where("procesado",0)
             ->whereIn("entidad",$entidad)
@@ -70,7 +72,7 @@ class ConsultasController extends Controller
     }
     public function PagosVerificados(Request $request){ 
         $user=auth()->user();
-        $entidad = OperacionApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+        $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
         $responseJson=array();
         $noInsert=array();
         //log::info($request->request);
@@ -108,7 +110,7 @@ class ConsultasController extends Controller
     public function consultaEntidadFolios(Request $request){ 
         try{   
             $user=auth()->user();
-            $entidad = OperacionApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();     
+            $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();     
             
             if(!empty($request->id_transaccion_motor)){
                 $datos=Transacciones::findTransaccionesFolio($entidad,'oper_transacciones.id_transaccion_motor',$request->id_transaccion_motor);

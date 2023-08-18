@@ -25,6 +25,7 @@ class User extends Authenticatable
         'perfil',
         'entidad',
         'tramites',
+        'ip_address'
     ];
 
     /**

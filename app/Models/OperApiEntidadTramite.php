@@ -5,22 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OperacionEntidad extends Model
+class OperApiEntidadTramite extends Model
 {
     use HasFactory;
     protected $connection = 'mysql';
     protected $fillable = [
         'id',
-        'nombre',
-        'clave',
+        'entidad',
+        'tramite',
+        'user_id',
+        'id_relacion',
         'created_at',
         'updated_at'
     ];
 
-    protected $table = "oper_entidad";
- 
+    protected $table = "api_entidad_tramite";
     public function entidadTramite() {
-		return $this->hasMany("App\Models\OperacionEntidadTramite", "entidad_id", "id");
-	}
+      return $this->hasMany("App\Models\OperEntidad", "id", "entidad");
+    }
     
 }

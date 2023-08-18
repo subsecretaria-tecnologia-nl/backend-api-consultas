@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Models\OperacionApiServicios;
-use App\Models\OperacionPagosApi;
+use App\Models\OperApiServicios;
+use App\Models\OperPagos;
 use SimpleXMLElement;
 use SoapClient;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 class ServiciosExternosController extends Controller
 {
+    public function __construct(){
+        $this->middleware('authsanctum');
+    }
     private function apiLoginUser($request){
         try {
             $v_token=$request->token_variable;
@@ -159,12 +162,12 @@ class ServiciosExternosController extends Controller
     }
     public function findServicios($tipo){
         try {
-            $fServicios=OperacionApiServicios::where("tiempo",$tipo)
+            $fServicios=OperApiServicios::where("tiempo",$tipo)
             ->where("status","0")
             ->get();
             $response=array();
             foreach ($fServicios as $f) {
-                OperacionApiServicios::where("id",$f->id)->update(["status"=>"2"]);
+                OperApiServicios::where("id",$f->id)->update(["status"=>"2"]);
             }
             foreach ($fServicios as $f) {
                 $response=$this->findServiciosEntidad($f);
@@ -173,7 +176,7 @@ class ServiciosExternosController extends Controller
                 }else{
                     $response= $this->consumirApiJSON($f,$response); 
                 }
-                OperacionApiServicios::where("id",$f->id)->update(["status"=>"1"]);
+                OperApiServicios::where("id",$f->id)->update(["status"=>"1"]);
             }
             return $response;
         } catch (\Exception $th) {
@@ -182,14 +185,14 @@ class ServiciosExternosController extends Controller
     }
     public function findServiciosEntidad($f){
         try {
-            $fUser=OperacionPagosApi::select(DB::raw($f->bd_query))
+            $fUser=OperPagos::select(DB::raw("oper_pagos_api.*"))
             ->leftjoin("api_entidad_tramite as entidadTr","entidadTr.entidad","oper_pagos_api.entidad")
             ->where("entidadTr.user_id",$f->user_id)
             ->where("oper_pagos_api.procesado","0")
             ->groupBy("oper_pagos_api.id")
             ->get();  
-            $response=$this->arrayFormat($f->json,$fUser);   
-            return $response;
+            //$response=$this->arrayFormat($f->json,$fUser);   
+            return $fUser;
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findServicios] Error ' . $th->getMessage());
         }
