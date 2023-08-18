@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use L5Swagger\Http\Controllers\SwaggerAssetController;
 
-class ConsultasController extends Controller
+class SwaggerConsultasApiController extends Controller
 {
 /**
  * @return \Illuminate\Http\JsonResponse
