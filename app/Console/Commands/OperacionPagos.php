@@ -42,9 +42,7 @@ class OperacionPagos extends Command
         try{
             $fechaInicio=Carbon::now()->addMonth(-2)->format("Y-m-d") . " 00:00:00";
             $fechaHoy=Carbon::now()->format("Y-m-d") . " 23:59:59";
-            log::info($fechaInicio);
-            log::info($fechaHoy);
-            Log::info("[Pagosas400@updateTable]-Command para actualizar la tabla de pagos" );                 
+            Log::info("[OperacionPagos@updateTable]-Command para actualizar la tabla de pagos" );                 
             $registros = Transacciones::select("oper_transacciones.*")
             ->leftjoin ("oper_pagos_api","oper_pagos_api.id_transaccion_motor","oper_transacciones.id_transaccion_motor")
             ->where('oper_transacciones.estatus',0)
@@ -52,15 +50,12 @@ class OperacionPagos extends Command
             ->where("oper_pagos_api.id_transaccion_motor",NULL)
             ->get();
 
-            Log::info("[Pagosas400@updateTable]-Registros a buscar " . $registros->count() );
-            log::info(count($registros));
+            Log::info("[OperacionPagos@updateTable]-Registros a buscar " . $registros->count() );
             if($registros->count() > 0){
                 foreach($registros as $reg){
                     $detalles=OperTramites::where("id_transaccion_motor",$reg->id_transaccion_motor)
                     ->with("servicios")
                     ->get();
-                    #log::info($detalles);
-                    #exit();
                     $extras=array();                    
                     foreach ($detalles as $d) {
                         $auxiliar=$d->auxiliar_2;
@@ -131,14 +126,14 @@ class OperacionPagos extends Command
                     }
                 }              
             }else{
-                Log::info("[Pagosas400@updateTable]-No existen pagos sin procesar");
+                Log::info("[OperacionPagos@updateTable]-No existen pagos sin procesar");
             }
     
         }catch(\Exception $e){
-            Log::info("[Pagosas400@updateTable]-ERROR-".$e->getMessage());
+            Log::info("[OperacionPagos@updateTable]-ERROR-".$e->getMessage());
             dd($e->getMessage());
         }
-        Log::info("[Pagosas400@updateTable]-Proceso terminado");
+        Log::info("[OperacionPagos@updateTable]-Proceso terminado");
     }
     private function obtenerfechaConciliacion($referencia)
     {   
