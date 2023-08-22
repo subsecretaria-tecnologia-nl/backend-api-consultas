@@ -21,6 +21,6 @@ class OperEntidadTramite extends Model
 
     protected $table = "oper_entidadtramite";
     public function servicios() {
-      return $this->hasMany("App\Models\EgobiernoTipoServicios", "Tipo_Code", "tipo_servicios_id");
+      return $this->hasMany("App\Models\EgobTipoServicios", "Tipo_Code", "tipo_servicios_id");
     }
 }

@@ -49,6 +49,6 @@ class OperTramites extends Model
 
     public $timestamps = false;
     public function servicios() {
-		return $this->hasMany("App\Entities\EgobTipoServicios", "Tipo_Code", "id_tipo_servicio");
+		return $this->hasMany("App\Models\EgobTipoServicios", "Tipo_Code", "id_tipo_servicio");
 	}
 }
