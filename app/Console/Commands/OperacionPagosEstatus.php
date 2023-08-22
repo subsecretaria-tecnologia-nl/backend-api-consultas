@@ -9,14 +9,14 @@ use App\Models\Transacciones;
 use App\Models\OperPagos;
 use App\Models\OperProcessedregisters;
 
-class OperacionCancelados extends Command
+class OperacionPagosEstatus extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'operacion:cancelados';
+    protected $signature = 'pagos:estatus';
 
     /**
      * The console command description.
