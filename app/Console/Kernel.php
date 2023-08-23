@@ -10,7 +10,8 @@ class Kernel extends ConsoleKernel
     protected $commands=[
         Commands\ConsumirServicios::class,
         Commands\OperacionPagos::class,
-        Commands\PagosEstatusConciliado::class
+        Commands\PagosConciliados::class,
+        Commands\OperacionPagosEstatus::class
     ];
     /**
      * Define the application's command schedule.
@@ -29,6 +30,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('operacion:pagos')->everyTenMinutes();
         #command actualiza el estatus en oper_pagos_api dependiendo de oper_transacciones
         $schedule->command('pagos:estatus')->everyTenMinutes();
+        #command para actualizar la fecha de conciliacion a la tabla de oper_pagos_api
+        $schedule->command('pagos:conciliado')->everyTenMinutes();
     }
 
     /**

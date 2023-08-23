@@ -97,7 +97,7 @@ class OperacionPagos extends Command
                     $detalle=array(
                         "referencia_bancaria"   => $reg->referencia,
                         "folio"                 => $reg->id_transaccion_motor,
-                        "origen_tramites"       => null,
+                        "origen_tramites"       => $reg->tipo_pago,
                         "origen_pago"           => "027",
                         "medio_pago"            => "",
                         "importe_pago"          => $reg->importe_transaccion,

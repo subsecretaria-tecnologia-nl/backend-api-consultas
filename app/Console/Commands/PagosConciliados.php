@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Models\OperProcessedregisters;
 use App\Models\OperPagos;
 
-class PagosEstatusConciliado extends Command
+class PagosConciliados extends Command
 {
     /**
      * The name and signature of the console command.
@@ -33,10 +33,10 @@ class PagosEstatusConciliado extends Command
     }
     private function transccionesConciliadas(){
         try {
-            $registros = OperPagos::select("oper_processedregiters.*")
-            ->join("oper_processedregiters","oper_processedregiters.referencia","oper_pagos_api.referencia")
+            $registros = OperPagos::select("oper_processedregisters.*")
+            ->join("oper_processedregisters","oper_processedregisters.referencia","oper_pagos_api.referencia")
             ->where("oper_pagos_api.entidad","<>","24")
-            ->where("oper_pagos_api.fechaConciliacion","<>","")
+            ->where("oper_pagos_api.fechaConciliacion","=","")
             ->get();
             if($registros->count() > 0){
                 foreach($registros as $reg){
