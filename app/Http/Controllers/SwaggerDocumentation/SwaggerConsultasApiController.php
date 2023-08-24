@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\SwaggerDocumentation;
+
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use L5Swagger\Http\Controllers\SwaggerAssetController;
@@ -15,8 +17,9 @@ class SwaggerConsultasApiController extends Controller
 * path="/api/auth/login",
 * operationId="login",
 * tags={"Token"},
-* summary="TOKEN",
-* description="User Login Token",
+* summary="Token",
+* description="comsumir api que retorna el token a usar en cada peticion de consulta",
+* description="comsumir api que retorna el token a usar en cada peticion de consulta",
 *      @OA\RequestBody(
 *         @OA\JsonContent(),
 *         @OA\MediaType(
@@ -28,21 +31,25 @@ class SwaggerConsultasApiController extends Controller
 *               @OA\Property(property="password", type="password")
 *            ),
 *        ),
-*    ),     
-*      @OA\Response(
+*    ),
+*    @OA\Response(
 *     response=200,
 *     description="Login Successfully",
 *      @OA\JsonContent(
-*        @OA\Property(property="status", type="string", example=true),
-*        @OA\Property(property="message", type="string", example="User Logged In Successfully."),
-*        @OA\Property(property="token", type="string", example="1|0JJCOd0QSTajchCUf5fYPex0ZKThSjLWefe3OfTb")
+*        @OA\Property(property="status", type="string", example="integer"),
+*        @OA\Property(property="message", type="string", example="string"),
+*        @OA\Property(property="token", type="string", example="string")
 *        )
 *      ),
-*      @OA\Response(
-*          response=400,
-*          description="Login Unsuccessfully",
-*          @OA\JsonContent()
-*       )
+*    @OA\Response(
+*         response=400,
+*         description="string",
+*        @OA\JsonContent(
+*           @OA\Property(property="status", type="string", example="integer"),
+*           @OA\Property(property="message", type="string", example="string"),
+*           @OA\Property(property="token", type="string", example="string")
+*        )
+*     )
 * )
 *
  * @OA\Get(
@@ -55,14 +62,9 @@ class SwaggerConsultasApiController extends Controller
 *     response=200,
 *     description="Successfully",
 *      @OA\JsonContent(
-*        @OA\Property(property="status", type="string", example=true),
-*        @OA\Property(property="message", type="string", example="Registros encontrados"),
-*        @OA\Property(
-*              property="datos",
-*              type="array",
-*              collectionFormat="multi",
-*              @OA\Items()
-*        )
+*        @OA\Property(property="status", type="string", example="integer"),
+*        @OA\Property(property="message", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
 *      )
 *    )
 * )
@@ -87,18 +89,18 @@ class SwaggerConsultasApiController extends Controller
 *     response=202,
 *     description="Successfully",
 *      @OA\JsonContent(
-*       @OA\Property(property="code", type="string", example=202),
-*        @OA\Property(property="status", type="string", example="Guardado exitoso."),
-*        @OA\Property(property="response", type="string", example="[]")
+*       @OA\Property(property="status", type="string", example="integer"),
+*        @OA\Property(property="message", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
 *      )
 *   ),
 *      @OA\Response(
 *       response=400,
 *       description="Unsuccessfully",
 *       @OA\JsonContent(
-*        @OA\Property(property="code", type="string", example=400),
-*        @OA\Property(property="status", type="string", example="id_transaccion_motor requerido."),
-*        @OA\Property(property="response", type="string", example="[]")
+*        @OA\Property(property="code", type="string",  example="integer"),
+*        @OA\Property(property="status", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
 *       )
 *    )
 * )
@@ -122,18 +124,18 @@ class SwaggerConsultasApiController extends Controller
 *     response=202,
 *     description="Successfully",
 *      @OA\JsonContent(
-*      @OA\Property(property="code", type="string", example=202),
-*        @OA\Property(property="status", type="string", example="Registros encontrados"),
-*        @OA\Property(property="response", type="string", example="[]")
+*      @OA\Property(property="code", type="string", example="integer"),
+*        @OA\Property(property="status", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
 *      )
 *   ),
 *      @OA\Response(
 *       response=400,
 *       description="Unsuccessfully",
 *       @OA\JsonContent(
-*        @OA\Property(property="code", type="string", example=400),
-*        @OA\Property(property="status", type="string", example="Sin Registros encontrado."),
-*        @OA\Property(property="response", type="string", example="[]")
+*        @OA\Property(property="code", type="string", example="integer"),
+*        @OA\Property(property="status", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
 *       )
 *    )
 * ),
@@ -157,9 +159,9 @@ class SwaggerConsultasApiController extends Controller
 *     response=202,
 *     description="Successfully",
 *      @OA\JsonContent(
-*      @OA\Property(property="status", type="string", example=true),
-*        @OA\Property(property="message", type="string", example="Archivo disponible, descarga una vez, expira en 24hrs."),
-*        @OA\Property(property="url", type="string", example="http://website.com")
+*      @OA\Property(property="status", type="string", example="integer"),
+*        @OA\Property(property="message", type="string", example="string"),
+*        @OA\Property(property="url", type="string", example="string")
 *      )
 *   ),
 * 

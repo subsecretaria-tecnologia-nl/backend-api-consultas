@@ -26,7 +26,7 @@ class AuthController extends Controller
             ]);
             if($validateUser->fails()){
                 return response()->json([
-                    'status' => false,
+                    'status' => 400,
                     'message' => 'validacion error',
                     'errors' => $validateUser->errors()
                 ], 401);
@@ -42,13 +42,13 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'status' => true,
+                'status' => 200,
                 'message' => 'Usuerio creado correctamente!!'
             ], 200);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => false,
+                'status' => 400,
                 'message' => $th->getMessage()
             ], 500);
         }
@@ -72,16 +72,16 @@ class AuthController extends Controller
 
             if($validateUser->fails()){
                 return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
+                    'status' => 400,
+                    'message' => 'Error de validacion',
                     'errors' => $validateUser->errors()
                 ], 401);
             }
 
             if(!Auth::attempt($request->only(['email', 'password']))){
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Email & Password does not match with our record.',
+                    'status' => 400,
+                    'message' => 'Correo & Contraseña no coincide con nuestro registro.',
                 ], 401);
             }
 
@@ -89,19 +89,19 @@ class AuthController extends Controller
             if(!empty($user)){
                 return response()->json([
                     'status' => true,
-                    'message' => 'User Logged In Successfully',
+                    'message' => 'Usuario autenticado correctamente',
                     'token' => $user->createToken("API TOKEN",["*"],Carbon::now()->addMinutes($minutes))->plainTextToken
                 ], 200);
             }else{
                 return response()->json([
-                    'status' => false,
-                    'message' => 'User Logged In Unsuccessfully',
+                    'status' => 400,
+                    'message' => 'Error al autenticar',
                 ], 401);
             }          
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => false,
+                'status' => 400,
                 'message' => $th->getMessage()
             ], 500);
         }
@@ -111,11 +111,12 @@ class AuthController extends Controller
         try {
             auth()->user()->tokens()->delete();
             return [
-                'message' => 'user logged out'
+                'status' => 200,
+                'message' => 'Cerrar sesion correntamente'
             ];
         } catch (Exception $th) {
             return response()->json([
-                'status' => false,
+                'status' => 400,
                 'message' => $th->getMessage()
             ], 500);
         }

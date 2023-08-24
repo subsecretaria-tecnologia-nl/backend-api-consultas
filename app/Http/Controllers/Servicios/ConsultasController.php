@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Servicios;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\OperPagos;
@@ -50,13 +49,13 @@ class ConsultasController extends Controller
                     );                    
                 }
                 return response()->json([
-                    'status' => true,
+                    'status' => 200,
                     'message' => 'Registros encontrados', 
-                    'datos'=>$temp
+                    'respose'=>$temp
                 ], 200);
             }else{
                 return response()->json([
-                    'status' => false,
+                    'status' => 400,
                     'message' => 'No se encontraronr egistros'
                 ], 400);
             }
@@ -64,7 +63,7 @@ class ConsultasController extends Controller
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
             return response()->json([
-                'status' => false,
+                'status' => 400,
                 'message' => 'Error: ' .$e->getMessage()
             ], 400);              
         }
@@ -95,7 +94,7 @@ class ConsultasController extends Controller
                     return response()->json($responseJson);
                 }else{
                     OperPagos::whereIn('id_transaccion_motor',$folios)->update(['procesado' => 1]);
-                    $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);
+                    $responseJson= $this->reponseVerf('200','Guardado exitoso',$noInsert);
 
                 }
                 log::info($folios);           // }        
@@ -120,37 +119,38 @@ class ConsultasController extends Controller
                 $datos=Transacciones::findTransaccionesFolio($entidad,'oper_transacciones.id_transaccion',$request->id_transaccion);
             }else{
                 return response()->json([
-                    'status' => false,
+                    'status' => 400,
                     'message' => 'Sin Registros encontrados', 
-                    'datos'=>[]
+                    'response'=>[]
                 ], 200); 
             }
             if(count($datos)==0){
                 return response()->json([
-                    'status' => false,
+                    'status' => 200,
                     'message' => 'Sin Registros encontrados', 
-                    'datos'=>[]
+                    'response'=>[]
                 ], 200);   
             }           
             return response()->json([
-                'status' => true,
+                'status' => 200,
                 'message' => 'Registros encontrados', 
-                'datos'=>$datos
+                'response'=>$datos
             ], 200); 
            
          }catch (\Exception $e) {
             log::info('Error folios entidad' . $e->getMessage());
             return response()->json([
-                'status' => false,
-                'message' => 'Error folios entidad: ' .$e->getMessage()
+                'status' => 400,
+                'message' => 'Error folios entidad: ' .$e->getMessage(), 
+                'response'=>[]
             ], 400);                       
         }
     }
     private function reponseVerf($status,$error,$responseJ){
         $response=array();
         $response= array(
-            'code' => $status,
-            'status' => $error,
+            'status' => $status,
+            'message' => $error,
             'response' => $responseJ,
         );
         return $response;
@@ -181,13 +181,13 @@ class ConsultasController extends Controller
            if($createFile==0){
                 #File::delete($path);
                 return response()->json([
-                    'status' => false,
+                    'status' => 400,
                     'message' => 'Sin Registros'
                 ], 400);
            }else{
                 $url = URL::temporarySignedRoute('api/download-file', Carbon::now()->addDays(1), ['name' => $name]);
                 return response()->json([
-                    'status' => true,
+                    'status' => 200,
                     'message' => 'Archivo disponible, descarga una vez, expira en 24hrs.',
                     'url'=>$url
                 ], 200);

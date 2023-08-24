@@ -5,10 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
 use App\Http\Controllers\Api;
 
-use App\Http\Controllers\ServiciosExternosController;
-use App\Http\Controllers\ConsultasController;
-use App\Http\Controllers\SwaggerController;
-use App\Http\Controllers\AlfrescoController;
+use App\Http\Controllers\Servicios;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,13 +24,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('/auth/login', [Api\AuthController::class, 'loginUser']);
-Route::get('/download-file',[ConsultasController::class, 'downloadFile'])->name("api/download-file");
+Route::get('/download-file',[Servicios\ConsultasController::class, 'downloadFile'])->name("api/download-file");
+Route::get('/alfresco/download/{id?}/{type?}',[Servicios\AlfrescoController::class, 'downloadFile']);
 Route::middleware('auth:sanctum')->group(function (){
 
     #Route::post('/auth/logout', [Api\AuthController::class, 'logoutUser']);
-    Route::get('/swagger/home', [Api\SwaggerController::class, 'index']);
+
+    #API_USUARIOS para consultar usurios | administrar 
     Route::post('/auth/register', [Api\AuthController::class, 'createUser']);
-    #API_USUARIOS para consultar usurios | administrar
     Route::get('/admin/users/{id_?}', [Api\AdministrarUsuariosController::class, 'findUsers']);
     Route::post('/admin/status', [Api\AdministrarUsuariosController::class, 'updateStatus']);    
     Route::put('/admin/users/{id_?}', [Api\AdministrarUsuariosController::class, 'updateUsers']);
@@ -47,16 +45,21 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/admin/servicios-ws/{user_id?}', [Api\AdministrarUsuariosController::class, 'findWs']);
     Route::post('/admin/servicios-ws', [Api\AdministrarUsuariosController::class, 'insertServicioWs']);
     Route::post('/admin/servicios-ws/{id_registro?}', [Api\AdministrarUsuariosController::class, 'updateServicioWs']);
-    Route::get('/cron/servicios', [ServiciosExternosController::class, 'findServicios']);
+    Route::get('/cron/servicios', [Servicios\ServiciosExternosController::class, 'findServicios']);
 
     #CONSULTA TRANSACCIONES
-    Route::get('/consulta-pagos',[ConsultasController::class, 'consultaPagos']);
-    Route::post('/verifica-pagos',[ConsultasController::class, 'PagosVerificados']);
-    Route::post('/consulta-folios',[ConsultasController::class, 'consultaEntidadFolios']);
-    Route::post('/consulta-archivos',[ConsultasController::class, 'findTransacciones']);
+    Route::get('/consulta-pagos',[Servicios\ConsultasController::class, 'consultaPagos']);
+    Route::post('/verifica-pagos',[Servicios\ConsultasController::class, 'PagosVerificados']);
+    Route::post('/consulta-folios',[Servicios\ConsultasController::class, 'consultaEntidadFolios']);
+    Route::post('/consulta-archivos',[Servicios\ConsultasController::class, 'findTransacciones']);
 
     #API ALFRESCO SERVICIO concentracion de archivos
-    Route::post('/folder',[AlfrescoController::class, 'createfolder']);
-    Route::post('/verifica-pagos',[AlfrescoController::class, 'PagosVerificados']);
+    Route::post('/alfresco/folder',[Servicios\AlfrescoController::class, 'createfolder']);
+    Route::post('/alfresco/file',[Servicios\AlfrescoController::class, 'saveFile']);    
+    Route::get('/alfresco/all-folder',[Servicios\AlfrescoController::class, 'findAllResgistros']);
+    Route::post('/alfresco/folder-file',[Servicios\AlfrescoController::class, 'findFiles']);
+    Route::post('/alfresco/date-file',[Servicios\AlfrescoController::class, 'findResgistros']);
+    Route::post('/alfresco/create-zip',[Servicios\AlfrescoController::class, 'createDownloadExample']);
+
 
 });

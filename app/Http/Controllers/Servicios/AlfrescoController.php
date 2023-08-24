@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Servicios;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -41,9 +41,9 @@ class AlfrescoController extends Controller
             ]);
             $response = $request_body->getBody()->getContents();
             $response=json_decode($response,true);
-            $rs=array();
+            $insert=array();
             if(isset($response["entry"])){
-                $rs=AlfrescoDirectory::create([
+                $insert=AlfrescoDirectory::create([
                     "name_folder"=>$request->name,
                     "id_folder"=>$response["entry"]["id"],
                     "status"=>1,
@@ -52,26 +52,38 @@ class AlfrescoController extends Controller
                     "json_response"=>json_encode( $response),
                 ]);
                 return response()->json([
-                    "Code" => "200",
-                    "Message" => "Carpeta creada.",
-                    "Response"=>$rs
+                    "status" => 200,
+                    "message" => "Carpeta creada.",
+                    "response"=> array(
+                        "id"=> $insert["id"],
+                        "name_folder"=>$request->name,
+                        "id_folder"=>$response["entry"]["id"],
+                        "status"=>1,
+                        "node_type"=>$response["entry"]["nodeType"],
+                        "parent_id"=>$response["entry"]["parentId"],
+                        "json_response"=> $response["entry"]
+                        )
                 ]);
             }else{
                 return response()->json([
-                    "Code" => "400",
-                    "Message" => "Error al crear la carpeta",
-                    "Response"=>"0"
+                    "status" => 400,
+                    "message" => "Error al crear la carpeta",
+                    "response"=>[]
                 ]);
             }            
         } catch (\Exception $e) {
             log::info("AlfrescoController@createfolder: ".$e);
-            return response()->json(["Code" => "400", "Message" => "Error al crear la carpeta." ]);
+            return response()->json(["status" => 400,"message"=>"Error al crear la carpeta","response"=>[] ]);
         }
     }
     public function findAllResgistros(){
         try {
             $find=AlfrescoDirectory::All(); 
-            return $find;
+            return response()->json([
+                "status" => 200,
+                "message" => "registros encontrados",
+                "response"=>$find
+            ]);
         } catch (\Exception $e) {
             log::info("AlfrescoController@findAllResgistros: ".$e);
         }
@@ -106,9 +118,9 @@ class AlfrescoController extends Controller
             ]);
             $response = $request_body->getBody()->getContents();
             $response=json_decode($response,true);
-            $return=0;
+            $insert=array();
             if(isset($response["entry"])){
-                $return=AlfrescoFiles::create([
+                $insert=AlfrescoFiles::create([
                     "id_directory"=>$request["id"],
                     "name_file"=>$request["name_file"],
                     "name_original"=>$request["name_original"],
@@ -120,22 +132,38 @@ class AlfrescoController extends Controller
                     "json_response"=>json_encode( $response),
                 ]);
                 Storage::delete('uploadTemporal/'.$request["name_file"]);
-                return $return;
+                return response()->json([
+                    "status" => 200,
+                    "message" => "Archivo guardado.",
+                    "response"=> array(
+                        "id"=>$insert["id"],
+                        "id_directory"=>$request["id"],
+                        "name_file"=>$request["name_file"],
+                        "name_original"=>$request["name_original"],
+                        "id_file"=>$response["entry"]["id"],
+                        "status"=>1,
+                        "type_file"=>$response["entry"]["content"]["mimeTypeName"],
+                        "node_type"=>$response["entry"]["nodeType"],
+                        "parent_id"=>$response["entry"]["parentId"],
+                        "json_response"=> $response
+                        )
+                ]);
             }
         } catch (\Exception $e) {
             log::info("AlfrescoController@saveFile: ".$e);
-            return 0;
+            return response()->json(["status" => 400, "message" => "Error al guardar el archivo." ]);
         }
     }
-    public function saveFile($file,$id){
+    public function saveFile(Request $request){
         try {
-
+            $file=$request->file;
+            $id=$request->id;
             $return=0;
             $date_=Carbon::now()->format("YmdHms");
             $array_=array();
             $extension = $file->getClientOriginalExtension();
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $findFolder=AlfrescoDirectory::findWhere(["id"=>$id]);
+            $findFolder=AlfrescoDirectory::where("id",$id)->get();
             $fname=$filename . "-" .  $date_ . "." . $extension;
             Storage::disk('local')->put("uploadTemporal/".$fname,  File::get($file));
             if($findFolder->count()>0){
@@ -147,7 +175,6 @@ class AlfrescoController extends Controller
                 );
                 $return=$this->saveFileAlfresco($array_,$fname);
             }
-            //log::info($return);
             return $return;
         } catch (\Exception $e) {
             log::info("AlfrescoController@saveFile: ".$e);
@@ -164,12 +191,17 @@ class AlfrescoController extends Controller
     public function findFiles(Request $request){
         try {
             $find=AlfrescoFiles::findWhere(["id_directory"=>$request->id]);
-            return $find;
+            return response()->json([
+                "status" => 200,
+                "message" => "registros encontrados",
+                "response"=>$find
+            ]);
         } catch (\Exception $e) {
             log::info("AlfrescoController@findFiles: ".$e);
+            return response()->json(["status" => 400, "message" => "Error al buscar." ]);
         }
     }
-    public function downloadfile($id,$type){
+    public function downloadFile($id,$type){
         try {
             if($type=="file"){
                 $findF=AlfrescoFiles::findWhere(["id"=>$id]);
@@ -192,14 +224,21 @@ class AlfrescoController extends Controller
             return response()->download(storage_path("app/uploadTemporal")."/".$fName)->deleteFileAfterSend(true);
         } catch (\Exception $e) {
             log::info("AlfrescoController@downloadfile: ".$e);
+            return response()->json(["status" => 400, "message" => "Error al descargar el archivo." ]);
         }
     }
     public function findResgistros(Request $request){
         try {
             $fInicio=Carbon::parse($request->fecha_inicio)->format("Y-m-d") . " 00:00:00";
             $fFin=Carbon::parse($request->fecha_fin)->format("Y-m-d") . " 23:59:59";
-            $find=AlfrescoFiles::whereBetween("created_at",[$fInicio,$fFin])->where("id_directory",$request->id)->get(); 
-            return $find;
+            $find=AlfrescoFiles::whereBetween("created_at",[$fInicio,$fFin])
+            ->where("id_directory",$request->id)
+            ->get(); 
+            return response()->json([
+                "status" => 200,
+                "message" => "Registros encontrados.",
+                "response"=> $find
+            ]);
         } catch (\Exception $e) {
             log::info("AlfrescoController@findAllResgistros: ".$e);
         }
@@ -208,22 +247,24 @@ class AlfrescoController extends Controller
         try {
             $fInicio=Carbon::parse($request->fecha_inicio)->format("Y-m-d") . " 00:00:00";
             $fFin=Carbon::parse($request->fecha_fin)->format("Y-m-d") . " 23:59:59";
-            $fIdsFiles=AlfrescoFiles::whereBetween("created_at",[$fInicio,$fFin])->where("id_directory",$request->id)->pluck("id_file")->toArray();
+            $fIdsFiles=AlfrescoFiles::whereBetween("created_at",[$fInicio,$fFin])
+            ->where("id_directory",$request->id)
+            ->pluck("id_file")
+            ->toArray();
             $response=$this->createDownload($fIdsFiles,3);
             if($response==null){
                 return response()->json([
-                    "Code" => "400",
-                    "Message" => "Carpeta creada.",
-                    "Response"=>0
+                    "status" => 400,
+                    "message" => "Carpeta creada.",
+                    "response"=>[]
                 ]);
             }else{
                 return response()->json([
-                    "Code" => "200",
-                    "Message" => "Descarga disponible.",
-                    "Response"=>$response
+                    "status" => 200,
+                    "message" => "Descarga disponible.",
+                    "response"=>$response
                 ]);
             }
-
         } catch (\Exception $e) {
             log::info("AlfrescoController@createDownloadExample: ".$e);
         }
@@ -241,17 +282,25 @@ class AlfrescoController extends Controller
             ]);
             $response = $request_body->getBody()->getContents();
             $response=json_decode($response,true);
-            $rs=null;
             if(isset($response["entry"])){
-                $rs=AlfrescoDownload::create([
+                AlfrescoDownload::create([
                     "id_download"=>$response["entry"]["id"],
                     "status"=>1,
                     "expires"=>$dateExp,
                     "json_response"=>json_encode($response),
                 ]);
-
+                
             }   
-            return $rs;
+            return response()->json([
+                "status" => 200,
+                "message" => "zip creado.",
+                "response"=> array(
+                    "id_download"=>$response["entry"]["id"],
+                    "status"=>1,
+                    "expires"=>$dateExp,
+                    "json_response"=>$response
+                )
+            ]);
         } catch (\Exception $e) {
             log::info("AlfrescoController@createDownload: ".$e);
             return 0;

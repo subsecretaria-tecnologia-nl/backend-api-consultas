@@ -25,10 +25,15 @@ class AdministrarUsuariosController extends Controller
                 $fUser=User::all();
             }else{
                 $fUser=User::where('id',$id_)->get();
-            }            
-            return $fUser;
+            }     
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados.',
+                'response'=>$fUser
+            ], 200);
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findUsers] Error ' . $th->getMessage());
+            return response()->json(["status" => 400, "message" => "Error al consultar" ]);
         }
     }
     public function updateUser(Request $request){
@@ -38,13 +43,14 @@ class AdministrarUsuariosController extends Controller
                 'tramites' => $request->perfil
             ]);
             return response()->json([
-                'status' => true,
+                'status' => 200,
                 'message' => 'Usuario Actualizado',
                 #'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
 
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@updateUser] Error ' . $th->getMessage());
+            return response()->json(["status" => 400, "message" => "Error al actualizar" ]);
         }
     }
     public function updateStatus(Request $request){
@@ -56,14 +62,11 @@ class AdministrarUsuariosController extends Controller
                 $descripcion="Usuario Activado";
             }
             return response()->json([
-                "Code" => "200",
-                "Message" =>$descripcion,
+                "status" => 200,
+                "message" =>$descripcion,
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                "Code" => "400",
-                "Message" => "Error al obtener activar/desactivar ",
-            ]);
+            return response()->json(["status" => 400, "message" => "Error al obtener activar/desactivar" ]);
         }
     }
     ############## MANEJO DE ENTIDADES
@@ -87,9 +90,14 @@ class AdministrarUsuariosController extends Controller
                     );
                 }
             }
-            return $response;
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados.',
+                'response'=>$response
+            ], 200);
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findEntidad] Error ' . $th->getMessage());
+            return response()->json(["status" => 400, "message" => "Error al consultar" ]);
         }
     }
     public function findEntidadTramiteUser(Request $request){
@@ -111,9 +119,14 @@ class AdministrarUsuariosController extends Controller
                     );
                 }
             }
-            return $response;
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados.',
+                'response'=>$response
+            ], 200);
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findEntidadTramiteUser] Error ' . $th->getMessage());
+            return response()->json(["status" => 400, "message" => "Error al consultar" ]);
         }
     }
     public function insertEntidadTramite(Request $request){
@@ -182,14 +195,14 @@ class AdministrarUsuariosController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'parametro requerido',
-                    'data'=>array()
+                    'response'=>array()
                 ], 400);    
             }
             $findWs=OperApiServicios::where("user_id",$user_id)->get();
             return response()->json([
                 'status' => true,
                 'message' => 'registros',
-                'data'=>$findWs
+                'response'=>$findWs
             ], 200);
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findWs] Error ' . $th->getMessage());

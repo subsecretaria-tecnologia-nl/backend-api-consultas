@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\ServiciosExternosController;
+use App\Http\Controllers\Servicios\ServiciosExternosController;
 class ConsumirServicios extends Command
 {
     
@@ -33,7 +33,7 @@ class ConsumirServicios extends Command
     private function optionApis($tipo){
         try {
             Log::info("Consumir:apis " . $tipo );
-            app(ServiciosExternosController::class)->findServicios($tipo);
+            app(Servicios\ServiciosExternosController::class)->findServicios($tipo);
         } catch (\Exception $e) {
             log::info("Error Schedule commmand@consumirapis" . $e);
         }
