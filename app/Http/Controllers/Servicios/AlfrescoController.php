@@ -190,7 +190,7 @@ class AlfrescoController extends Controller
     }
     public function findFiles(Request $request){
         try {
-            $find=AlfrescoFiles::findWhere(["id_directory"=>$request->id]);
+            $find=AlfrescoFiles::where("id_directory",$request->id)->get();
             return response()->json([
                 "status" => 200,
                 "message" => "registros encontrados",
@@ -204,11 +204,11 @@ class AlfrescoController extends Controller
     public function downloadFile($id,$type){
         try {
             if($type=="file"){
-                $findF=AlfrescoFiles::findWhere(["id"=>$id]);
+                $findF=AlfrescoFiles::where("id",$id)->get();
                 $idFile=$findF[0]["id_file"];
                 $fName=$findF[0]["name_original"];
             }else{
-                $findF=AlfrescoDownload::findWhere(["id"=>$id]);
+                $findF=AlfrescoDownload::where("id",$id)->get();
                 $idFile=$findF[0]["id_download"];
                 $fName="archive.zip";
             }           
