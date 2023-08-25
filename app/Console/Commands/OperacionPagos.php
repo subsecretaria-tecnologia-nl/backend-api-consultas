@@ -40,7 +40,7 @@ class OperacionPagos extends Command
     }
     public function updateTable(){
         try{
-            $fechaInicio=Carbon::now()->addMonth(-15)->format("Y-m-d") . " 00:00:00";
+            $fechaInicio=Carbon::now()->addMonth(-3)->format("Y-m-d") . " 00:00:00";
             $fechaHoy=Carbon::now()->format("Y-m-d") . " 23:59:59";
             Log::info("[OperacionPagos@updateTable]-Command para actualizar la tabla de pagos" );                 
             $registros = Transacciones::select("oper_transacciones.*")
