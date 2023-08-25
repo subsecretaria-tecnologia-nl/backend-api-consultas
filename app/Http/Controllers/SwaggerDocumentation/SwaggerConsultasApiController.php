@@ -18,8 +18,7 @@ class SwaggerConsultasApiController extends Controller
 * operationId="login",
 * tags={"Token"},
 * summary="Token",
-* description="comsumir api que retorna el token a usar en cada peticion de consulta",
-* description="comsumir api que retorna el token a usar en cada peticion de consulta",
+* description="Api para obtener el token y usarlo en cada peticion",
 *      @OA\RequestBody(
 *         @OA\JsonContent(),
 *         @OA\MediaType(

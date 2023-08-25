@@ -79,18 +79,16 @@ class SwaggerFilesController extends Controller
 * 
 *@OA\Get(
 * path="/api/alfresco/download/{id}/{type}",
-* summary="descarga de arhivo",
+* summary="Descarga de arhivo",
 * description="Descarga de archivo con el id de la anterior respuesta de la api, especificar si es un archivo comprimido 'zip' o arhivo 'file' ",
 * tags={"Centralizacion de archivos"},
  *   @OA\Parameter(
- *    description="id",
  *    in="path",
  *    name="id",
  *    required=true,
- *    example="21"
+ *    example="19"
  *  ), 
  * @OA\Parameter(
- *    description="type",
  *    in="path",
  *    name="type",
  *    required=true,
