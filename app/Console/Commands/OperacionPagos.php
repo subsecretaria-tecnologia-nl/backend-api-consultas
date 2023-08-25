@@ -40,7 +40,7 @@ class OperacionPagos extends Command
     }
     public function updateTable(){
         try{
-            $fechaInicio=Carbon::now()->addMonth(-2)->format("Y-m-d") . " 00:00:00";
+            $fechaInicio=Carbon::now()->addMonth(-15)->format("Y-m-d") . " 00:00:00";
             $fechaHoy=Carbon::now()->format("Y-m-d") . " 23:59:59";
             Log::info("[OperacionPagos@updateTable]-Command para actualizar la tabla de pagos" );                 
             $registros = Transacciones::select("oper_transacciones.*")
@@ -48,6 +48,7 @@ class OperacionPagos extends Command
             ->where('oper_transacciones.estatus',0)
             ->whereBetween("oper_transacciones.fecha_transaccion",[$fechaInicio,$fechaHoy])
             ->where("oper_pagos_api.id_transaccion_motor",NULL)
+            ->take(1000)
             ->get();
 
             Log::info("[OperacionPagos@updateTable]-Registros a buscar " . $registros->count() );
@@ -102,7 +103,7 @@ class OperacionPagos extends Command
                         "medio_pago"            => "",
                         "importe_pago"          => $reg->importe_transaccion,
                         "fecha_pago"            => Carbon::parse($reg->fecha_pago)->format("Ymd"),
-                        "hora_pago"             => Carbon::parse($reg->fecha_pago)->format("HHmmss"),
+                        "hora_pago"             => Carbon::parse($reg->fecha_pago)->format("His"),
                         "tramites"              => $extras
                     );
                     $info = array(

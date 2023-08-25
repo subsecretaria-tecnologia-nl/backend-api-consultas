@@ -185,14 +185,19 @@ class ServiciosExternosController extends Controller
     }
     public function findServiciosEntidad($f){
         try {
+            $array_return=array();
             $fUser=OperPagos::select(DB::raw("oper_pagos_api.*"))
             ->leftjoin("api_entidad_tramite as entidadTr","entidadTr.entidad","oper_pagos_api.entidad")
             ->where("entidadTr.user_id",$f->user_id)
             ->where("oper_pagos_api.procesado","0")
             ->groupBy("oper_pagos_api.id")
             ->get();  
-            //$response=$this->arrayFormat($f->json,$fUser);   
-            return $fUser;
+            #$response=$this->arrayFormat($f->json,$fUser);
+            foreach ($fUser as $f) {
+                $array_return []=json_decode($f->detalle,true);
+            }
+            #log::info(json_encode($array_return));
+            return $array_return;
         } catch (\Exception $th) {
             Log::info('[AdministrarUsuariosController@findServicios] Error ' . $th->getMessage());
         }

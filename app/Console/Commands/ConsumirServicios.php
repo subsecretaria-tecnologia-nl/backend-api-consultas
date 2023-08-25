@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Servicios\ServiciosExternosController;
+use App\Http\Controllers\Servicios;
 class ConsumirServicios extends Command
 {
     
