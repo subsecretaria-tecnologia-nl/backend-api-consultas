@@ -146,6 +146,51 @@ class ConsultasController extends Controller
             ], 400);                       
         }
     }
+    public function consultaTransacciones($tipo=null,$transaccion=null){ 
+        try{   
+            $user=auth()->user();
+            $entidad=OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();     
+            if(empty($transaccion)){
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'transaccion requerido', 
+                    'response'=>[]
+                ], 400);
+            }else if($tipo=="id_transaccion_motor"){
+                $datos=Transacciones::findTransaccionesFolio($entidad,'oper_transacciones.id_transaccion_motor',[$transaccion]);
+            }else if($tipo=="referencia"){
+                $datos=Transacciones::findTransaccionesFolio($entidad,'oper_transacciones.referencia',[$transaccion]);
+            }else if($tipo=="id_transaccion"){
+                $datos=Transacciones::findTransaccionesFolio($entidad,'oper_transacciones.id_transaccion',[$transaccion]);
+            }else{
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Sin Registros encontrados', 
+                    'response'=>[]
+                ], 400); 
+            }
+            if(count($datos)==0){
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Sin Registros encontrados', 
+                    'response'=>[]
+                ], 400);   
+            }           
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados', 
+                'response'=>$datos
+            ], 200); 
+           
+         }catch (\Exception $e) {
+            log::info('Error folios entidad' . $e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Error folios entidad: ' .$e->getMessage(), 
+                'response'=>[]
+            ], 400);                       
+        }
+    }
     private function reponseVerf($status,$error,$responseJ){
         $response=array();
         $response= array(

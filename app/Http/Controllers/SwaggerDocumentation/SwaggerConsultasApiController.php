@@ -138,6 +138,42 @@ class SwaggerConsultasApiController extends Controller
 *       )
 *    )
 * ),
+* @OA\Get(
+* path="/api/consulta-folio/{tipo}/{transaccion}",
+* operationId="consulta_tipo_folio",
+* tags={"Consultas"},
+* summary="Consulta de folios",
+* description="consulta por tipo id_transaccion_motor/referencia/id_transaccion",
+* security={{"bearerAuth":{}}},
+*     @OA\Parameter(
+ *    in="path",
+ *    name="tipo",
+ *    required=true
+ *  ), 
+ * @OA\Parameter(
+ *    in="path",
+ *    name="transaccion",
+ *    required=true
+ *  ), 
+*  @OA\Response(
+*     response=202,
+*     description="Successfully",
+*      @OA\JsonContent(
+*      @OA\Property(property="code", type="string", example="integer"),
+*        @OA\Property(property="status", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
+*      )
+*   ),
+*      @OA\Response(
+*       response=400,
+*       description="Unsuccessfully",
+*       @OA\JsonContent(
+*        @OA\Property(property="code", type="string", example="integer"),
+*        @OA\Property(property="status", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="array")
+*       )
+*    )
+* ),
 * @OA\Post(
 * path="/api/consulta-archivos",
 * operationId="consulta_archivos",

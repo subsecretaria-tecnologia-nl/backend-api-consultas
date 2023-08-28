@@ -195,6 +195,7 @@ class ServiciosExternosController extends Controller
             #$response=$this->arrayFormat($f->json,$fUser);
             foreach ($fUser as $f) {
                 $array_return []=json_decode($f->detalle,true);
+                OperPagos::where("id",$f->id)->update(["procesado"=>"1"]);
             }
             #log::info(json_encode($array_return));
             return $array_return;
