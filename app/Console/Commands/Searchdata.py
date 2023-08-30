@@ -3,7 +3,7 @@ import json
 from mysql.connector import Error
 from dotenv import dotenv_values
 from Detallesegob import *
-from datetime import datetime
+import datetime
 
 config = dotenv_values(".env")
 
@@ -49,7 +49,7 @@ def consulta_egob():
             LEFT JOIN egobierno.tipopago P ON P.TipoPago = IFNULL(T.TipoPago,7)
             WHERE T.fechatramite >= DATE_SUB(NOW(), INTERVAL """ + dbmonth + """ MONTH)
             AND T.tipoServicio IN (3)
-            AND T.status = 0 LIMIT 1001"""
+            AND T.status = 0 """
 
             cursor = connection.cursor(dictionary=True)
             cursor.execute(qry)
@@ -61,11 +61,11 @@ def consulta_egob():
             response["data"] = records
 
             # Inicialización de lista para el atributo data
-            data = []
+            data = list()
 
             for r in records:
-                d = {}
-                tstamp = datetime.now().strftime("%G-%m-%d %H:%M:%S")
+                # tstamp: str = '{:%Y-%m-%d %H:%M:%S}' . format(datetime.datetime.now())
+                d = dict()
                 d['id_transaccion_motor'] = r['id_transaccion_motor']
                 d['id_transaccion'] = r['id_transaccion']
                 d['estatus'] = r['estatus']
@@ -80,24 +80,40 @@ def consulta_egob():
                 d['fecha_conciliacion'] = r['fecha_conciliacion']
                 d['tipo_servicio'] = r['tipo_servicio']
                 d['desc_tipo_servicio'] = r['desc_tipo_servicio']
-                d['created_at'] = tstamp
-                d['updated_at'] = tstamp
-
-                # Obtención del JSON con detalle de los tramites.
-                detalle = obtDetalle(r['id_transaccion'], r['tipo_servicio'])
-
-                # Validación de contenido para integración a la respuesta general
-                if detalle['error'] == 0:
-                    d['detalle'] = json.dumps(detalle['data'], default=str)
-                else:
-                    d['detalle'] = []
+                d['created_at'] = '{:%Y-%m-%d %H:%M:%S}' . format(datetime.datetime.now())
+                d['updated_at'] = '{:%Y-%m-%d %H:%M:%S}' . format(datetime.datetime.now())
                 d['corte'] = ''
                 d['procesado'] = 0
+
+                # Obtención del JSON con detalle de los tramites.
+                detalle = obtDetalle(r['id_transaccion'], r['tipo_servicio'],cursor)
+
+                if detalle['error'] != 0:
+                    d['detalle'] = json.dumps({
+                        'referencia_bancaria': "",
+                        'folio': "",
+                        'origen_tramites': "",
+                        'origen_pago': "",
+                        'medio_pago': "",
+                        'importe_pago': "",
+                        'fecha_pago': "",
+                        'hora_pago': "",
+                        'nombre_rs': "",
+                        'tramites': ""
+                    }, default=str)
+                    print(detalle)
+                # Validación de contenido para integración a la respuesta general
+                else:
+                    d['detalle'] = json.dumps(detalle['data'], default=str)
+
                 data.append(d)
+
             response["data"] = data
-    except Error as e:
-        response["msg"] = "Error mientras se intento conectar {}".format(e)
-        response["data"] = []
+    # except Error as e:
+    #     response["msg"] = "Error mientras se intento conectar {}".format(e)
+    #     response["data"] = []
+    except (Exception, mysql.connector.Error) as error:
+        print("Error durante la conexión o consulta (General):", error)
     finally:
         if connection.is_connected():
             cursor.close()

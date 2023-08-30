@@ -28,7 +28,7 @@ class TablacentralCron extends Command
     public function handle()
     {
         $process = new Process(["python3", base_path() . "/app/Console/Commands/Cronegob.py"]);
-        $process->setTimeout(240);
+        $process->setTimeout(420);
         $process->run();
 
         if (!$process->isSuccessful()) {

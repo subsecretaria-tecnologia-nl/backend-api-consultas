@@ -6,6 +6,7 @@ from dotenv import dotenv_values
 config = dotenv_values(".env")
 
 def inserta_data(d):
+
     response = {"error":1, "msg":"", "data":[]}
     data = list()
 
@@ -20,40 +21,44 @@ def inserta_data(d):
         dbpwd = config['DB_MYSQL_PASSWORD']
 
         saveconn = mysql.connector.connect(host=dbhost, database=dbname, user=dbuser, password=dbpwd)
+        savecursor = saveconn.cursor()
+        qry = """ INSERT INTO operacion.oper_pagos_api (
+                id_transaccion_motor,
+                id_transaccion,
+                estatus,
+                desc_estatus,
+                entidad,
+                referencia,
+                Total,
+                cve_Banco,
+                MetododePago,
+                FechaTransaccion,
+                FechaPago,
+                FechaConciliacion,
+                tipo_servicio,
+                desc_tipo_servicio,
+                created_at,
+                updated_at,
+                corte,
+                procesado,
+                detalle
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
 
         if saveconn.is_connected():
-            while len(data) != 0:
-                qry = """ INSERT INTO operacion.oper_pagos_api (
-                    id_transaccion_motor,
-                    id_transaccion,
-                    estatus,
-                    desc_estatus,
-                    entidad,
-                    referencia,
-                    Total,
-                    cve_Banco,
-                    MetododePago,
-                    FechaTransaccion,
-                    FechaPago,
-                    FechaConciliacion,
-                    tipo_servicio,
-                    desc_tipo_servicio,
-                    created_at,
-                    updated_at,
-                    detalle,
-                    corte,
-                    procesado
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
-                savecursor = saveconn.cursor()
-                savecursor.executemany(qry,data[:999])
-                del data[:999]
+            i = 0
+            while i < len(data):
+                savecursor.execute(qry,data[i])
+                # del data[:999]
                 saveconn.commit()
-    except Error as e:
-        response["msg"] = "Error mientras se intento guardar los datos {}" . format(e)
-        response["data"] = []
+                i+=1
+
+    # except Error as e:
+    #     response["msg"] = "Error mientras se intento guardar los datos {}" . format(e)
+    #     response["data"] = []
+    except (Exception, mysql.connector.Error) as error:
+        print("Error durante la conexión o consulta (Guardado):", error)
     finally:
         if saveconn.is_connected():
-            savecursor.close()
             saveconn.close()
         print("Elementos insertados: ", len(d))
         return response
