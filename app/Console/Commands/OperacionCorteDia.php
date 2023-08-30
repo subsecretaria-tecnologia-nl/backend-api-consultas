@@ -23,30 +23,32 @@ class OperacionCorteDia extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'crea un archivo al dia con el formato del corte';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $fs=rand(1,28);
-        echo($fs);
-        //$this->findTransacciones();
+       /* $fs=rand(1,28);
+        echo($fs);*/
+        $this->findTransacciones();
        
     }
     public function findTransacciones(){
         try {
-            $date=Carbon::now()->format('Y-m-d');
-            $data=OperPagos::select("*")
-            ->whereBetween("fechaPago",[$date . ' 00:00:00',$date.'23:59:59'])
-            ->where('status','0')
-            ->get();
-
-            $name='corte_'.Carbon::now()->format('YmdHHmmss');
-            $path=storage_path('app/ConsultasTXT/'.$name.'.txt');
-            if (!File::exists($path)){File::put($path,'');}
-           $createFile=$this->gArchivo_Generico_Oper($path,$data);
+            $date=Carbon::now()->addDays(-1)->format('Y-m-d');
+            //$date=Carbon::now()->format('Y-m-d');
+            $data=OperPagos::findtransaccionesDetalle([$date . ' 00:00:00',$date.' 23:59:59']);
+            //log::info($data);
+            $name='corte_'.Carbon::now()->format('Ymd');
+            $path=storage_path('app/CorteTXT/'.$name.'.txt');
+            if (!File::exists($path)){
+                File::put($path,'');
+            }else{
+                File::delete($path);
+            }
+           $this->gArchivo_Generico_Oper($path,$data);
 
         } catch (\Exception $e) {
             log::info('Error findTransacciones' . $e->getMessage());

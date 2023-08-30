@@ -243,32 +243,29 @@ class ConsultasController extends Controller
         }
     }
     private function gArchivo_Generico_Oper($path,$data){
-        $cadena='';        
-        
+        $cadena='';  
         if(count($data)>0){     
             foreach ($data as $d) {
                 #log::info($d->id);
-                $RowReferencia=str_pad($d->referencia,30,"0",STR_PAD_LEFT);
-                $RowFolio=str_pad($d->id_transaccion_motor,20,"0",STR_PAD_LEFT);
-                $RowTransaccion=str_pad($d->id_transaccion,20,"0",STR_PAD_LEFT);
-                $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);
-                $RowMedio_pago=str_pad(mb_convert_encoding(substr($d->MetododePago,0,50), "Windows-1252", "UTF-8"),50); 
-                $RowIdtramite=str_pad($d->tipo_servicio,6,"0",STR_PAD_LEFT);
-                $RowFechaDis=str_pad(Carbon::parse($d->fecha_ejecucion)->format('Ymd'),8);
-                $RowHoraDis=str_pad(Carbon::parse($d->fecha_ejecucion)->format('Hms'),6);          
-                $RowFechapago=str_pad(Carbon::parse($d->fechaPago)->format('Ymd'),8);
-                $RowHorapago=str_pad(Carbon::parse($d->fechaPago)->format('hms'),6);
-                $RowPartida=str_pad($d->partida,5,"0",STR_PAD_LEFT);
+                $RowReferencia=$d->referencia;
+                $RowFolio=$d->id_transaccion_motor;
+                $RowTransaccion=$d->id_transaccion;
+                $RowOrigen="027";
+                $RowMedio_pago=mb_convert_encoding(substr($d->MetododePago,0,50), "Windows-1252", "UTF-8"); 
+                $RowIdtramite=$d->tipo_servicio;
+                $RowFechaDis=Carbon::parse($d->fecha_ejecucion)->format('Ymd');
+                $RowHoraDis=Carbon::parse($d->fecha_ejecucion)->format('Hms');          
+                $RowFechapago=Carbon::parse($d->fechaPago)->format('Ymd');
+                $RowHorapago=Carbon::parse($d->fechaPago)->format('hms');
+                $RowPartida=$d->partida;
                 #$RowConsepto=str_pad(mb_convert_encoding(substr($d->concepto,0,120), "Windows-1252", "UTF-8"),120);
-                $RowTotalTramite=str_pad(str_replace(".", "",$d->Total),11,"0",STR_PAD_LEFT);
-                $RowCuentaPago=str_pad($d->cuenta_banco,30,"0",STR_PAD_LEFT);
-                $RowAlias=str_pad($d->cuenta_alias,6,"0",STR_PAD_LEFT); 
+                $RowTotalTramite=str_replace(".", "",$d->Total);
+                $RowCuentaPago=$d->cuenta_banco;
+                $RowAlias=$d->cuenta_alias; 
                 #$RowNombreRazonS=str_pad(mb_convert_encoding(substr($RowNombreRazonS,0,250), "Windows-1252", "UTF-8"),250);
-                $RowDatoAdicional1=str_pad("",30,"0",STR_PAD_LEFT);
-
-                $cadena=$RowReferencia.$RowFolio.$RowTransaccion.$RowOrigen.$RowTotalTramite.$RowMedio_pago.$RowIdtramite.$RowPartida.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1;
-                File::append($path,$cadena."\r\n");
-                        
+                $RowDatoAdicional1=" ";
+                $cadena=$RowReferencia  . "|" . $RowFolio . "|" . $RowTransaccion . "|" . $RowOrigen . "|" . $RowTotalTramite . "|" . $RowMedio_pago . "|" . $RowIdtramite . "|" . $RowPartida . "|" . $RowFechaDis . "|" . $RowHoraDis . "|" . $RowFechapago . "|" . $RowHorapago . "|" . $RowCuentaPago . "|" . $RowAlias . "|" . $RowDatoAdicional1;
+                File::append($path,$cadena."\r\n");                        
             }
             return $path;
         }

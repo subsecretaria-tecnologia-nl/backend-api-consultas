@@ -67,6 +67,53 @@ class Transacciones extends Model
           return $data;
        
     }
-    
+    public static function findtransaccionesDetalle($referencia){
+        $data=Transacciones::where('oper_transacciones.estatus','0')
+            ->leftjoin("oper_tramites as tramites","tramites.id_transaccion_motor","oper_transacciones.id_transaccion_motor")
+            ->leftjoin("oper_detalle_tramite as detalle","detalle.id_tramite_motor","tramites.id_tramite_motor")
+            ->leftjoin("oper_processedregisters as concilia","concilia.referencia","oper_transacciones.referencia")
+            ->where("oper_transacciones.referencia",$referencia)
+            ->where('detalle.partida','<>','53234')
+            ->where(function ($q) {
+                $q->orWhere('detalle.partida','<>','56754')
+                ->orWhere('detalle.concepto' ,'LIKE', '%Normal%')
+                ->orWhere('detalle.concepto','LIKE', '%Diferencia%');
+            })
+            ->select(
+                'concilia.transaccion_id',
+                'detalle.id_detalle_tramite',
+                'concilia.id',
+                'oper_transacciones.referencia',
+                'concilia.banco_id',
+                'concilia.info_transacciones',
+                'concilia.cuenta_banco',
+                'concilia.cuenta_alias',
+                'concilia.fecha_ejecucion',
+                'concilia.day',
+                'concilia.month',
+                'concilia.year',
+                'oper_transacciones.metodo_pago_id',
+                'oper_transacciones.cuenta_deposito',
+                'fecha_transaccion as fecha_tramite',
+                'fecha_transaccion as hora_tramite',
+                'tramites.id_tramite_motor as Folio',
+                'tramites.id_tipo_servicio as tipo_servicio',
+                'tramites.auxiliar_1',
+                'tramites.auxiliar_2',
+                'detalle.concepto',
+                'detalle.importe_concepto',
+                'detalle.partida',
+                'oper_transacciones.id_transaccion_motor',
+                'tramites.nombre',
+                'tramites.apellido_paterno',
+                'tramites.apellido_materno',
+                'tramites.razon_social'
+            )
+            ->groupBy('detalle.id_detalle_tramite','oper_transacciones.referencia')
+            ->orderBy('oper_transacciones.id_transaccion_motor','DESC')
+            ->take(1000)
+            ->get();
+        return $data;
+    }
 
 }
