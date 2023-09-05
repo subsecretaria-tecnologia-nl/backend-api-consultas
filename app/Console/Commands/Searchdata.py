@@ -48,7 +48,7 @@ def consulta_egob():
             LEFT JOIN egobierno.tipo_servicios S ON S.Tipo_Code = T.TipoServicio
             LEFT JOIN egobierno.tipopago P ON P.TipoPago = IFNULL(T.TipoPago,7)
             WHERE T.fechatramite >= DATE_SUB(NOW(), INTERVAL """ + dbmonth + """ MONTH)
-            AND T.tipoServicio IN (3)
+            AND T.tipoServicio IN (137)
             AND T.status = 0 """
 
             cursor = connection.cursor(dictionary=True)
@@ -89,19 +89,7 @@ def consulta_egob():
                 detalle = obtDetalle(r['id_transaccion'], r['tipo_servicio'],cursor)
 
                 if detalle['error'] != 0:
-                    d['detalle'] = json.dumps({
-                        'referencia_bancaria': "",
-                        'folio': "",
-                        'origen_tramites': "",
-                        'origen_pago': "",
-                        'medio_pago': "",
-                        'importe_pago': "",
-                        'fecha_pago': "",
-                        'hora_pago': "",
-                        'nombre_rs': "",
-                        'tramites': ""
-                    }, default=str)
-                    print(detalle)
+                    d['detalle'] = ''
                 # Validación de contenido para integración a la respuesta general
                 else:
                     d['detalle'] = json.dumps(detalle['data'], default=str)
