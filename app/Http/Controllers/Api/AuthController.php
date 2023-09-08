@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailConfirmation;
 class AuthController extends Controller
 {
      
@@ -21,7 +23,7 @@ class AuthController extends Controller
             $validateUser = Validator::make($request->all(), 
             [
                 'name' => 'required',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'required|email',
                 'password' => 'required'
             ]);
             if($validateUser->fails()){
@@ -40,7 +42,7 @@ class AuthController extends Controller
                 'entidad' => json_encode(array()),
                 'tramites' => json_encode(array())
             ]);
-
+            $this->SendEmail($request->name,$request->email,$request->password);
             return response()->json([
                 'status' => 200,
                 'message' => 'Usuerio creado correctamente!!'
@@ -120,5 +122,21 @@ class AuthController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+    private function SendEmail($name,$correo,$pass){
+        $response='202';
+        
+        $bodyText=array('Nombre: '.$name,'Usuario: ' . $correo, 'Contraseña: ' . $pass);
+        $link = $_SERVER["HTTP_HOST"];
+       try{
+           $subject="Registro Usuario";        
+           Mail::to($correo)
+           ->send(new EmailConfirmation("Registro Usuario",['introLines'=>$bodyText,'actionUrl'=>$link,'actionText'=>'Ir a Sitio','color'=>'green']));
+
+       }catch(\Exception $e){
+           log::info($e);
+           $response='404';
+       }
+       return $response;
     }
 }

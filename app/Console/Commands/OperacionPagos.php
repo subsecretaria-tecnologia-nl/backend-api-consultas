@@ -104,6 +104,7 @@ class OperacionPagos extends Command
                         "importe_pago"          => $reg->importe_transaccion,
                         "fecha_pago"            => Carbon::parse($reg->fecha_pago)->format("Ymd"),
                         "hora_pago"             => Carbon::parse($reg->fecha_pago)->format("His"),
+                        "nombre_rs"             => "",
                         "tramites"              => $extras
                     );
                     $info = array(

@@ -13,6 +13,8 @@ use App\Models\OperEntidad;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailConfirmation;
 class AdministrarUsuariosController extends Controller
 {
     public function __construct(){
