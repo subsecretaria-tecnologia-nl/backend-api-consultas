@@ -15,6 +15,7 @@ def inserta_data(d):
         data.append(lista)
 
     try:
+
         dbhost = config['DB_MYSQL_HOST']
         dbname = config['DB_MYSQL_DATABASE']
         dbuser = config['DB_MYSQL_USERNAME']
@@ -48,7 +49,6 @@ def inserta_data(d):
             i = 0
             while i < len(data):
                 savecursor.execute(qry,data[i])
-                # del data[:999]
                 saveconn.commit()
                 i+=1
 

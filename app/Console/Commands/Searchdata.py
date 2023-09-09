@@ -48,7 +48,6 @@ def consulta_egob():
             LEFT JOIN egobierno.tipo_servicios S ON S.Tipo_Code = T.TipoServicio
             LEFT JOIN egobierno.tipopago P ON P.TipoPago = IFNULL(T.TipoPago,7)
             WHERE T.fechatramite >= DATE_SUB(NOW(), INTERVAL """ + dbmonth + """ MONTH)
-            AND T.tipoServicio IN (137)
             AND T.status = 0 """
 
             cursor = connection.cursor(dictionary=True)
@@ -64,7 +63,6 @@ def consulta_egob():
             data = list()
 
             for r in records:
-                # tstamp: str = '{:%Y-%m-%d %H:%M:%S}' . format(datetime.datetime.now())
                 d = dict()
                 d['id_transaccion_motor'] = r['id_transaccion_motor']
                 d['id_transaccion'] = r['id_transaccion']
@@ -97,11 +95,10 @@ def consulta_egob():
                 data.append(d)
 
             response["data"] = data
-    # except Error as e:
-    #     response["msg"] = "Error mientras se intento conectar {}".format(e)
-    #     response["data"] = []
+
     except (Exception, mysql.connector.Error) as error:
-        print("Error durante la conexión o consulta (General):", error)
+        response["msg"] = "Error mientras se intento conectar {}".format(error)
+        response["data"] = []
     finally:
         if connection.is_connected():
             cursor.close()
