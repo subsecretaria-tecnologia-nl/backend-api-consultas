@@ -286,7 +286,7 @@ class ConsultasController extends Controller
             return "<br><br><rh><center><h3>URL Expirado</h3></center><hr>";
         }
     }
-    public function findCancelados(){
+    /*public function findCancelados(){
         try {
             $user=auth()->user();
             $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
@@ -325,6 +325,34 @@ class ConsultasController extends Controller
                     'message' => 'No se encontraronr registros'
                 ], 400);
             }    
+        }catch (\Exception $e) {
+            log::info('Error ConsultasController@findCancelados ' . $e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Error: ' .$e->getMessage()
+            ], 400);              
+        }
+    }*/
+    public function findCancelados(){
+        try{
+            $user=auth()->user();
+            $entidad=OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+            #log::info($entidad);
+            $fechaInicio=Carbon::now()->addMonth(-3)->format("Y-m-d") . " 00:00:00";
+            $fechaHoy=Carbon::now()->format("Y-m-d") . " 23:59:59";     
+            $datos=Transacciones::findTransaccionesEstatus($entidad,"<>","0",[$fechaInicio,$fechaHoy]);
+            if(count($datos)==0){
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Sin Registros encontrados', 
+                    'response'=>[]
+                ], 400);   
+            }           
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados', 
+                'response'=>$datos
+            ], 200);
         }catch (\Exception $e) {
             log::info('Error ConsultasController@findCancelados ' . $e->getMessage());
             return response()->json([

@@ -115,5 +115,28 @@ class Transacciones extends Model
             ->get();
         return $data;
     }
+    public static function findTransaccionesEstatus($entidad,$sign,$status,$variable){
+        $data = Transacciones::select(
+            'oper_transacciones.entidad AS entidad',
+            'oper_transacciones.referencia AS referencia',
+            'oper_transacciones.id_transaccion_motor AS id_transaccion_motor',
+            'oper_transacciones.id_transaccion AS id_transaccion',
+            'oper_transacciones.estatus AS estatus',
+            'oper_transacciones.importe_transaccion  AS Total',
+            'oper_metodopago.nombre AS MetododePago',
+            'oper_transacciones.tipo_pago AS cve_Banco',
+            'oper_transacciones.banco AS Banco',
+            'oper_transacciones.fecha_transaccion AS FechaTransaccion',
+            'oper_transacciones.fecha_pago AS FechaPago',
+            'oper_processedregisters.fecha_ejecucion AS FechaConciliacion')
+        ->leftjoin('oper_metodopago','oper_metodopago.id','=','oper_transacciones.metodo_pago_id')
+        ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','=','oper_transacciones.referencia')
+         ->where("oper_transacciones.estatus",$sign,$status)
+         ->whereIn("oper_transacciones.entidad",$entidad)
+         ->whereBetween("oper_transacciones.fecha_transaccion",$variable) 
+        ->orderBy('oper_transacciones.id_transaccion_motor', 'DESC')
+        ->get();
+        return $data;       
+    }
 
 }
