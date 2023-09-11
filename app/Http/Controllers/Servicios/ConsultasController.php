@@ -56,7 +56,7 @@ class ConsultasController extends Controller
             }else{
                 return response()->json([
                     'status' => 400,
-                    'message' => 'No se encontraronr egistros'
+                    'message' => 'No se encontraronr registros'
                 ], 400);
             }
     
@@ -286,5 +286,51 @@ class ConsultasController extends Controller
             return "<br><br><rh><center><h3>URL Expirado</h3></center><hr>";
         }
     }
+    public function findCancelados(){
+        try {
+            $user=auth()->user();
+            $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+            $registros = OperPagos::where("procesado",0)
+            ->whereIn("entidad",$entidad)
+            ->where("estatus","<>",0)
+            ->leftjoin("operacion.oper_entidad as ent","ent.id","oper_pagos_api.entidad")
+            ->select("oper_pagos_api.*","ent.nombre as entidad")
+            ->get();
 
+            if($registros->count() > 0){
+                $temp = array();
+                foreach($registros as $r){   
+                    $temp[]= array(
+                        "entidad"               => $r->entidad,
+                        "referencia"            => $r->referencia,
+                        "id_transaccion_motor"  => $r->id_transaccion_motor,
+                        "id_transaccion"        => $r->id_transaccion,
+                        "estatus"               => $r->estatus,
+                        "Total"                 => $r->Total,
+                        "MetododePago"          => $r->MetododePago,
+                        "cve_Banco"             => $r->cve_Banco,
+                        "FechaTransaccion"      => $r->FechaTransaccion,
+                        "FechaPago"             => $r->FechaPago,
+                        "FechaConciliacion"     => $r->FechaConciliacion,
+                    );                    
+                }
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Registros encontrados', 
+                    'respose'=>$temp
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'No se encontraronr registros'
+                ], 400);
+            }    
+        }catch (\Exception $e) {
+            log::info('Error ConsultasController@findCancelados ' . $e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Error: ' .$e->getMessage()
+            ], 400);              
+        }
+    }
 }

@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     #CONSULTA TRANSACCIONES
     Route::get('/consulta-pagos',[Servicios\ConsultasController::class, 'consultaPagos']);
+    Route::get('/consulta-cancelados',[Servicios\ConsultasController::class, 'findCancelados']);
     Route::post('/verifica-pagos',[Servicios\ConsultasController::class, 'PagosVerificados']);
     Route::post('/consulta-folios',[Servicios\ConsultasController::class, 'consultaEntidadFolios']);
     Route::get('/consulta-folio/{tipo?}/{transaccion?}',[Servicios\ConsultasController::class, 'consultaTransacciones']);
