@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/consulta-folios',[Servicios\ConsultasController::class, 'consultaEntidadFolios']);
     Route::get('/consulta-folio/{tipo?}/{transaccion?}',[Servicios\ConsultasController::class, 'consultaTransacciones']);
     Route::post('/consulta-archivos',[Servicios\ConsultasController::class, 'findTransacciones']);
+    Route::post('/consulta-general',[Servicios\ConsultasController::class, 'consultaGeneral']);
 
     #API ALFRESCO SERVICIO concentracion de archivos
     Route::post('/alfresco/folder',[Servicios\AlfrescoController::class, 'createfolder']);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use SebastianBergmann\CodeCoverage\Node\Builder;
 /**
  * Class Transacciones.
  *
@@ -34,8 +35,10 @@ class Transacciones extends Model
     ];
 
     protected $table = "oper_transacciones";
-    public $timestamps = false;
-
+    public $timestamps = true;
+    public function tramites() {
+		return $this->hasMany("App\Models\OperTramites", "id_transaccion_motor", "id_transaccion_motor");
+	}
     public static function findTransaccionesFolio($entidad,$variable1,$variable2)
     {
         
@@ -137,6 +140,28 @@ class Transacciones extends Model
         ->orderBy('oper_transacciones.id_transaccion_motor', 'DESC')
         ->get();
         return $data;       
+    }
+    public static function findtransaccionesGeneral($variable,$folio,$entidad){
+        $data=Transacciones::where("oper_transacciones.".$variable,$folio)
+            ->leftjoin("oper_tramites as tramites","tramites.id_transaccion_motor","oper_transacciones.id_transaccion_motor")
+            ->leftjoin("oper_processedregisters as concilia","concilia.referencia","oper_transacciones.referencia")            
+            ->whereIn("oper_transacciones.entidad",$entidad)
+            ->select(
+                'oper_transacciones.referencia',
+                'concilia.fecha_ejecucion as fecha_conciliacion',
+                'oper_transacciones.metodo_pago_id',
+                'oper_transacciones.cuenta_deposito',
+                'oper_transacciones.fecha_transaccion as fecha_tramite',
+                'oper_transacciones.id_transaccion_motor'
+            )
+            ->with(['tramites'=>function ($query) {
+                $query->leftjoin("egobierno.tipo_servicios as serv","serv.Tipo_Code","id_tipo_servicio")
+                ->select('id_transaccion_motor','id_tramite_motor','id_tipo_servicio', 'serv.Tipo_Descripcion');
+            }])
+            ->groupBy('tramites.id_tramite_motor','oper_transacciones.referencia')
+            ->orderBy('oper_transacciones.id_transaccion_motor','DESC')
+            ->get();
+        return $data;
     }
 
 }

@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
         Commands\OperacionPagosEstatus::class,
         Commands\OperacionPagosCorte::class,
         Commands\OperacionCorteDia::class,
+        Commands\OoperacionPagosHistorial::class,
     ];
     /**
      * Define the application's command schedule.
@@ -37,8 +38,12 @@ class Kernel extends ConsoleKernel
         #command para actualizar la fecha de conciliacion a la tabla de oper_pagos_api
         $schedule->command('pagos:conciliado')->everyTenMinutes();
         
-        #commad lcrea un archivo al finalizar el dia
+        #command crea un archivo al finalizar el dia
         $schedule->command('operacion:cortedia')->hourlyAt('02:00');
+
+        #command busca e inserta las transacciones pagadas y consultadas cada mes/semana en historial
+        $schedule->command('pagos:historial')->monthlyOn(1, '03:00'); #->weeklyOn(1, '03:00');
+        
     }
 
     /**

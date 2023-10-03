@@ -361,4 +361,52 @@ class ConsultasController extends Controller
             ], 400);              
         }
     }
+    public function consultaGeneral(Request $request){
+        try {
+            $user=auth()->user();
+            $referencia="";
+            $id_transaccion_motor="";
+            $response=array();
+            Log::info(!empty($request->referencia));
+            $entidad=OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray(); 
+            if(!empty($request->referencia)){
+                $referencia=substr($request->referencia,0,2);
+            }else if(!empty($request->id_transaccion_motor)){
+                $id_transaccion_motor=strlen($request->id_transaccion);
+            }else if(!empty($request->id_transaccion)){}else{ 
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Parametro requeridos, referencia|id_transaccion_motor|id_transaccion'
+                ], 400);
+            }
+            if($referencia=="01"){
+                
+            }else if(strlen($referencia)==2 &&  $referencia!="01"){
+                $response=Transacciones::findtransaccionesGeneral("referencia",$request->referencia,$entidad);
+            }else{
+                if($id_transaccion_motor==10){
+                    $response=Transacciones::findtransaccionesGeneral("id_transaccion_motor",$request->id_transaccion_motor,$entidad);
+                }
+                if(count($response)==0){
+                    $response=array();
+
+                     if(count($response)==0){
+                        $response=Transacciones::findtransaccionesGeneral("id_transaccion",$request->id_transaccion,$entidad);
+                    }
+                }
+            }
+            
+            return response()->json([
+                'status' => 200,
+                'message' => 'Rergistros encontrados',
+                'response'=> $response
+            ], 200);
+        } catch (\Exception $e) {
+            log::info('Error ConsultasController@consultaGeneral ' . $e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Error: ' .$e->getMessage()
+            ], 400);
+        }
+    }
 }
