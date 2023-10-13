@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Servicios;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\OperPagos;
-use App\Models\OperApiEntidadTramite;
-use App\Models\Transacciones;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use App\Models\OperPagos;
+use App\Models\OperApiEntidadTramite;
+use App\Models\Transacciones;
+use App\Models\ExternoEgobReferenciabancaria;
+use App\Models\ExternoEgobTransacciones;
 class ConsultasController extends Controller
 {
     public function __construct(){
@@ -365,35 +367,38 @@ class ConsultasController extends Controller
         try {
             $user=auth()->user();
             $referencia="";
-            $id_transaccion_motor="";
+            $id_transaccion="";
             $response=array();
             Log::info(!empty($request->referencia));
             $entidad=OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray(); 
             if(!empty($request->referencia)){
                 $referencia=substr($request->referencia,0,2);
             }else if(!empty($request->id_transaccion_motor)){
-                $id_transaccion_motor=strlen($request->id_transaccion);
-            }else if(!empty($request->id_transaccion)){}else{ 
+                $id_transaccion=$request->id_transaccion_motor;
+            }else if(!empty($request->id_transaccion)){
+                $id_transaccion=$request->id_transaccion;
+            }else{ 
                 return response()->json([
                     'status' => 400,
                     'message' => 'Parametro requeridos, referencia|id_transaccion_motor|id_transaccion'
                 ], 400);
             }
             if($referencia=="01"){
-                
+                $response=ExternoEgobReferenciabancaria::findTransaccionesReferencia($request->referencia);
             }else if(strlen($referencia)==2 &&  $referencia!="01"){
                 $response=Transacciones::findtransaccionesGeneral("referencia",$request->referencia,$entidad);
             }else{
-                if($id_transaccion_motor==10){
-                    $response=Transacciones::findtransaccionesGeneral("id_transaccion_motor",$request->id_transaccion_motor,$entidad);
-                }
+                $response=ExternoEgobTransacciones::findTransaccionesFolio($id_transaccion);
                 if(count($response)==0){
-                    $response=array();
-
-                     if(count($response)==0){
-                        $response=Transacciones::findtransaccionesGeneral("id_transaccion",$request->id_transaccion,$entidad);
+                    log::info("opcion: id_transaccion_motor");
+                    $response=Transacciones::findtransaccionesGeneral("id_transaccion_motor",$id_transaccion,$entidad);
+                    if(count($response)==0){
+                        if(count($response)==0){
+                            log::info("opcion: id_transaccion 2");
+                            $response=Transacciones::findtransaccionesGeneral("id_transaccion",$id_transaccion,$entidad);
+                        }
                     }
-                }
+                }                
             }
             
             return response()->json([

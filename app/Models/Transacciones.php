@@ -28,7 +28,6 @@ class Transacciones extends Model
         'fecha_pago',
         'entidad',
         'tipo_pago',
-        'id_transaccion',
         'email_referencia',
         'email_pago',
         'revisado'
@@ -37,7 +36,7 @@ class Transacciones extends Model
     protected $table = "oper_transacciones";
     public $timestamps = true;
     public function tramites() {
-		return $this->hasMany("App\Models\OperTramites", "id_transaccion_motor", "id_transaccion_motor");
+		return $this->hasMany("App\Models\OperTramites", "id_transaccion_motor", "folio");
 	}
     public static function findTransaccionesFolio($entidad,$variable1,$variable2)
     {
@@ -143,22 +142,21 @@ class Transacciones extends Model
     }
     public static function findtransaccionesGeneral($variable,$folio,$entidad){
         $data=Transacciones::where("oper_transacciones.".$variable,$folio)
-            ->leftjoin("oper_tramites as tramites","tramites.id_transaccion_motor","oper_transacciones.id_transaccion_motor")
             ->leftjoin("oper_processedregisters as concilia","concilia.referencia","oper_transacciones.referencia")            
             ->whereIn("oper_transacciones.entidad",$entidad)
             ->select(
                 'oper_transacciones.referencia',
-                'concilia.fecha_ejecucion as fecha_conciliacion',
-                'oper_transacciones.metodo_pago_id',
-                'oper_transacciones.cuenta_deposito',
+                'oper_transacciones.id_transaccion_motor as folio',
                 'oper_transacciones.fecha_transaccion as fecha_tramite',
-                'oper_transacciones.id_transaccion_motor'
+                'concilia.fecha_ejecucion as fecha_conciliacion',
+                'oper_transacciones.estatus',
+                'oper_transacciones.importe_transaccion as monto'                
             )
             ->with(['tramites'=>function ($query) {
                 $query->leftjoin("egobierno.tipo_servicios as serv","serv.Tipo_Code","id_tipo_servicio")
-                ->select('id_transaccion_motor','id_tramite_motor','id_tipo_servicio', 'serv.Tipo_Descripcion');
+                ->select('id_transaccion_motor','id_tramite_motor as folio_tramite','importe_tramite','id_tipo_servicio', 'serv.Tipo_Descripcion as servicio');
             }])
-            ->groupBy('tramites.id_tramite_motor','oper_transacciones.referencia')
+            ->groupBy('oper_transacciones.referencia')
             ->orderBy('oper_transacciones.id_transaccion_motor','DESC')
             ->get();
         return $data;

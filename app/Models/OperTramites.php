@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OperTramites extends Model
 {
     use HasFactory;
+	protected $connection = "mysql";
     protected $table = "oper_tramites";
     protected $fillable = [
     	'id_tramite_motor',

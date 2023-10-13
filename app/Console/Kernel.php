@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
         Commands\OperacionPagosEstatus::class,
         Commands\OperacionPagosCorte::class,
         Commands\OperacionCorteDia::class,
-        Commands\OoperacionPagosHistorial::class,
+        Commands\OperacionPagosHistorial::class,
     ];
     /**
      * Define the application's command schedule.
