@@ -200,7 +200,7 @@ class SwaggerConsultasApiController extends Controller
 *      )
 *   ),
 * 
-* )
+* ),
  * @OA\Get(
  * path="/api/consulta-cancelados",
  * summary="Consulta de transacciones canceladas",
@@ -216,6 +216,34 @@ class SwaggerConsultasApiController extends Controller
 *        @OA\Property(property="response", type="string", example="array")
 *      )
 *    )
+* ),
+* @OA\Post(
+* path="/api/consulta-general",
+* operationId="consulta_general",
+* tags={"Consultas"},
+* summary="Consulta general",
+* description="consulta por id_transaccio,id_transaccion_motor,referencia de operacion/egobierno",
+* security={{"bearerAuth":{}}},
+*      @OA\RequestBody(
+*         @OA\JsonContent(
+*               @OA\Property(
+*                   property="referencia", type="object",
+*                   collectionFormat="multi",
+*                   example="119974081620000292640940081261", 
+*                   type="string"    
+*            ),
+*        ),
+*    ),     
+*  @OA\Response(
+*     response=202,
+*     description="Successfully",
+*      @OA\JsonContent(
+*      @OA\Property(property="status", type="string", example="integer"),
+*        @OA\Property(property="message", type="string", example="string"),
+*        @OA\Property(property="response", type="string", example="string")
+*      )
+*   ),
+* 
 * )
 */
     public function index(){
