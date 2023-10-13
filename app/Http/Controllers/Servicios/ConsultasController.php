@@ -400,10 +400,16 @@ class ConsultasController extends Controller
                     }
                 }                
             }
-            
+            if(count($response)==0){
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Sin registros',
+                    'response'=> []
+                ], 400);
+            }
             return response()->json([
                 'status' => 200,
-                'message' => 'Rergistros encontrados',
+                'message' => 'Registros encontrados',
                 'response'=> $response
             ], 200);
         } catch (\Exception $e) {
