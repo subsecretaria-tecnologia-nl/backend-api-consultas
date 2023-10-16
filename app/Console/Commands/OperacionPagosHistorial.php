@@ -56,12 +56,15 @@ class OperacionPagosHistorial extends Command
             'usuario_procesado')
             ->where("FechaTransaccion","<",$fecha_anterior)
             ->where("procesado","1")
+            ->where(function ($q) {
+                $q->where("FechaConciliacion","<>",null)
+                ->where("FechaConciliacion","<>","");
+            })
             ->take(1000)
             ->get();
-            #log::info($ftrans);
             OperPagosHistorial::insert(json_decode($ftrans,true));
             foreach ($ftrans as $f) {
-                #OperPagos::where('id',$f->id)->delete();
+                OperPagos::where('id',$f->id)->delete();
             }    
         } catch (\Exception $e) {
             Log::info("[OperacionPagosHistorial@moveTransacciones]-ERROR-".$e->getMessage());
