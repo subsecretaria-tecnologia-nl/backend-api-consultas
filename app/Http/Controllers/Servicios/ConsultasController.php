@@ -461,7 +461,7 @@ class ConsultasController extends Controller
             ], 200); 
            
          }catch (\Exception $e) {
-            log::info('Error consultaTransaccionesHistorico@folios entidad' . $e->getMessage());
+            log::info('Error ConsultasController@consultaTransaccionesHistorico entidad' . $e->getMessage());
             return response()->json([
                 'status' => 400,
                 'message' => 'Error folios entidad: ' .$e->getMessage(), 
