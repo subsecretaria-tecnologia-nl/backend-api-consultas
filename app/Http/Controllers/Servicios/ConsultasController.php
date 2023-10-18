@@ -13,6 +13,7 @@ use App\Models\OperApiEntidadTramite;
 use App\Models\Transacciones;
 use App\Models\ExternoEgobReferenciabancaria;
 use App\Models\ExternoEgobTransacciones;
+use App\Models\OperPagosHistorial;
 class ConsultasController extends Controller
 {
     public function __construct(){
@@ -122,7 +123,7 @@ class ConsultasController extends Controller
             }else{
                 return response()->json([
                     'status' => 400,
-                    'message' => 'Sin Registros encontrados', 
+                    'message' => 'referencia/id_transaccion_motor/id_transaccion requirido', 
                     'response'=>[]
                 ], 200); 
             }
@@ -418,6 +419,54 @@ class ConsultasController extends Controller
                 'status' => 400,
                 'message' => 'Error: ' .$e->getMessage()
             ], 400);
+        }
+    }
+    public function consultaTransaccionesHistorico(Request $request){ 
+        try{   
+            $user=auth()->user();
+            $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
+            if(!empty($request->id_transaccion_motor)){
+                $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'id_transaccion_motor',$request->id_transaccion_motor);
+                if(count($datos)==0){
+                    $datos=OperPagos::findTransaccionesFolio($entidad,'id_transaccion_motor',$request->id_transaccion_motor);
+                }
+            }else if(!empty($request->referencia)){
+                $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'referencia',$request->referencia);
+                if(count($datos)==0){
+                    $datos=OperPagos::findTransaccionesFolio($entidad,'referencia',$request->referencia);
+                }
+            }else if(!empty($request->id_transaccion)){
+                $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'id_transaccion',$request->id_transaccion);
+                if(count($datos)==0){
+                    $datos=OperPagos::findTransaccionesFolio($entidad,'id_transaccion',$request->id_transaccion);
+                }
+            }else{
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'referencia/id_transaccion_motor/id_transaccion requeridos', 
+                    'response'=>[]
+                ], 200); 
+            }
+            if(count($datos)==0){
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Sin Registros encontrados', 
+                    'response'=>[]
+                ], 200);   
+            }           
+            return response()->json([
+                'status' => 200,
+                'message' => 'Registros encontrados', 
+                'response'=>$datos
+            ], 200); 
+           
+         }catch (\Exception $e) {
+            log::info('Error consultaTransaccionesHistorico@folios entidad' . $e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Error folios entidad: ' .$e->getMessage(), 
+                'response'=>[]
+            ], 400);                       
         }
     }
 }

@@ -62,4 +62,23 @@ class OperPagos extends Model
             ->get();
         return $data;
     }
+    public static function findTransaccionesFolio($entidad,$variable1,$variable2){
+        $data = OperPagos::select("ent.nombre as entidad",
+        "referencia",
+        "id_transaccion_motor",
+        "id_transaccion",
+        "estatus",
+        "Total",
+        "MetododePago",
+        "cve_Banco",
+        "FechaTransaccion",
+        "FechaPago",
+        "FechaConciliacion")
+        ->whereIn("entidad",$entidad)
+        //->where("estatus",0)
+        ->whereIn($variable1,$variable2)
+        ->leftjoin("operacion.oper_entidad as ent","ent.id","entidad")
+        ->get();
+        return $data;
+    }
 }
