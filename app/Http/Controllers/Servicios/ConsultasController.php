@@ -424,22 +424,14 @@ class ConsultasController extends Controller
     public function consultaTransaccionesHistorico(Request $request){ 
         try{   
             $user=auth()->user();
+            $datos=array();
             $entidad = OperApiEntidadTramite::where("user_id",$user->id)->groupBy("entidad")->pluck("entidad")->toArray();
             if(!empty($request->id_transaccion_motor)){
                 $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'id_transaccion_motor',$request->id_transaccion_motor);
-                if(count($datos)==0){
-                    $datos=OperPagos::findTransaccionesFolio($entidad,'id_transaccion_motor',$request->id_transaccion_motor);
-                }
             }else if(!empty($request->referencia)){
                 $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'referencia',$request->referencia);
-                if(count($datos)==0){
-                    $datos=OperPagos::findTransaccionesFolio($entidad,'referencia',$request->referencia);
-                }
             }else if(!empty($request->id_transaccion)){
                 $datos=OperPagosHistorial::findTransaccionesFolio($entidad,'id_transaccion',$request->id_transaccion);
-                if(count($datos)==0){
-                    $datos=OperPagos::findTransaccionesFolio($entidad,'id_transaccion',$request->id_transaccion);
-                }
             }else{
                 return response()->json([
                     'status' => 400,
@@ -447,13 +439,13 @@ class ConsultasController extends Controller
                     'response'=>[]
                 ], 200); 
             }
-            if(count($datos)==0){
+            if(count($datos)>0){
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Sin Registros encontrados', 
+                    'message' => 'Sin registros', 
                     'response'=>[]
                 ], 200);   
-            }           
+            }         
             return response()->json([
                 'status' => 200,
                 'message' => 'Registros encontrados', 
