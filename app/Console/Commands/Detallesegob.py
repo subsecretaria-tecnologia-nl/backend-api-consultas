@@ -6,7 +6,7 @@ from Conceptosegob import *
 
 config = dotenv_values(".env")
 
-def obtDetalle(id,ts,cursor):
+def obtDetalle(id,ts,cursor,name_ts):
 
     response = {"error":1, "msg":"", "data":[]}
 
@@ -3544,7 +3544,56 @@ def obtDetalle(id,ts,cursor):
                         D.idTrans = """ + str(id)
                 cve = "600"
                 desc = "IMPUESTO SOBRE HOSPEDAJE EN SU CARACTER DE INTERMEDIARIO O FACILITADOR"
-
+            case _:
+                qry = """ SELECT 
+                        D.Folio AS sub_folio,
+                        '' AS RFC,
+                        '' AS CURP,
+                        '' AS cuenta,
+                        IFNULL(EXTRACT(YEAR FROM T.fechatramite),'') AS anio,
+                        IFNULL(EXTRACT(MONTH FROM T.fechatramite),'') AS mes,
+                        '' AS tipo_declaracion,
+                        IFNULL(D.CartImporte,'') AS totalcargo,
+                        '' AS maquinas,
+                        '' AS placa,
+                        '' AS solicitud,
+                        '' AS concesion,
+                        '' AS licencia,
+                        '' AS municipio,
+                        '' AS expcat,
+                        '' AS boleta,
+                        '' AS credito,
+                        '' AS convenio,
+                        '' AS parcialidad,
+                        '' AS adicional_1,
+                        '' AS adicional_2,
+                        '' AS adicional_3,
+                        '' AS adicional_4,
+                        '' AS adicional_5,
+                        '' AS adicional_6,
+                        IFNULL(R.Linea, '') AS referencia,
+                        IF(T.totaltramite = 0,
+                            0,
+                            IFNULL(T.tipopago, 0)) AS origentramites,
+                        T.idTrans AS idTrans,
+                        T.NombreEnvio AS nombrerc,
+                        D.CartKey2 AS nombretr,
+                        T.totaltramite AS importe_pago,
+                        REPLACE(IFNULL(C.fecha_banco, '00000000'),
+                            '-',
+                            '') AS fechapago
+                    FROM
+                        egobierno.folios D
+                            LEFT JOIN
+                        egobierno.transacciones T ON D.idTrans = T.idTrans
+                            LEFT JOIN
+                        egobierno.referenciabancaria R ON R.idTrans = T.idTrans
+                            LEFT JOIN
+                        conciliacion.conciliacion C ON C.idtrans = T.idTrans
+                    WHERE
+                        D.idTrans = """ + str(id)
+                cve = ts
+                desc = name_ts
 
         cursor.execute(qry)
         records = cursor.fetchall()

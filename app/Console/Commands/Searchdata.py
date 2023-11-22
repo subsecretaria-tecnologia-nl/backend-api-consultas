@@ -3,6 +3,7 @@ import json
 from mysql.connector import Error
 from dotenv import dotenv_values
 from Detallesegob import *
+from Updateegob import *
 import datetime
 
 config = dotenv_values(".env")
@@ -48,7 +49,7 @@ def consulta_egob():
             LEFT JOIN egobierno.tipo_servicios S ON S.Tipo_Code = T.TipoServicio
             LEFT JOIN egobierno.tipopago P ON P.TipoPago = IFNULL(T.TipoPago,7)
             WHERE T.fechatramite >= DATE_SUB(NOW(), INTERVAL """ + dbmonth + """ MONTH)
-            AND T.status IN (0,30) """
+            AND T.status IN (0,30) LIMIT 1 """
 
             cursor = connection.cursor(dictionary=True)
             cursor.execute(qry)
@@ -84,8 +85,8 @@ def consulta_egob():
                 d['procesado'] = 0
 
                 # Obtención del JSON con detalle de los tramites.
-                detalle = obtDetalle(r['id_transaccion'], r['tipo_servicio'],cursor)
-
+                detalle = obtDetalle(r['id_transaccion'], r['tipo_servicio'],cursor,r['desc_tipo_servicio'])
+                updateEgob(r['id_transaccion'], r['tipo_servicio'],cursor)
                 if detalle['error'] != 0:
                     d['detalle'] = ''
                 # Validación de contenido para integración a la respuesta general
