@@ -49,7 +49,7 @@ def consulta_egob():
             LEFT JOIN egobierno.tipo_servicios S ON S.Tipo_Code = T.TipoServicio
             LEFT JOIN egobierno.tipopago P ON P.TipoPago = IFNULL(T.TipoPago,7)
             WHERE T.fechatramite >= DATE_SUB(NOW(), INTERVAL """ + dbmonth + """ MONTH)
-            AND T.status IN (0,30) LIMIT 1 """
+            AND T.status IN (0,30) """
 
             cursor = connection.cursor(dictionary=True)
             cursor.execute(qry)
