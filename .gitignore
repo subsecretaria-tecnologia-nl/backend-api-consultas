@@ -19,3 +19,4 @@ test.dat
 .phplint-cache
 !.env.test
 .idea/
+

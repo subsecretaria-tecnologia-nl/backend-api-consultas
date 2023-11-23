@@ -1,3 +1,6 @@
 *
 !public/
+!ConsultasTXT/
+!corteTXT/
+!uploadTemporal/
 !.gitignore
