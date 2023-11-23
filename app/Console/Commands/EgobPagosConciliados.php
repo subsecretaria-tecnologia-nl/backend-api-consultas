@@ -44,9 +44,9 @@ class EgobPagosConciliados extends Command
                 foreach($registros as $reg){
                     $findConciliacion=ExternoConcConciliacion::where("idTrans",$reg->id_transaccion_motor)->get();
                     if(count($findConciliacion)>0){
-                        OperPagos::where("referencia",$reg->referencia)->update(["FechaConciliacion"=>$findConciliacion[0]["archivo"]]);
-                        if($reg->FechaConciliacion=="" || $reg->FechaConciliacion==null){
-                            OperPagos::where("referencia",$reg->referencia)->update(["FechaPago"=>$findConciliacion[0]["fecha_banco"]]);
+                        OperPagos::where("id_transaccion_motor",$reg->id_transaccion_motor)->update(["FechaConciliacion"=>$findConciliacion[0]["archivo"]]);
+                        if($reg->FechaPago=="" || $reg->FechaPago==null){
+                            OperPagos::where("id_transaccion_motor",$reg->id_transaccion_motor)->update(["FechaPago"=>$findConciliacion[0]["fecha_banco"]]);
                         }
                         Log::info("[EgobPagosConciliados@findUpdate]-Command para actualizar la tabla de pagos referencia: " .  $reg->referencia); 
                     }                    
